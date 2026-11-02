@@ -1,0 +1,15 @@
+package defpackage;
+
+/* JADX INFO: compiled from: r8-map-id-0bfc939acdb2c2ed066a39909232567106f3dc80b59d530c205412207654b975 */
+/* JADX INFO: loaded from: classes.dex */
+public abstract class tb {
+    public abstract float a(int i);
+
+    public abstract int b();
+
+    public abstract tb c();
+
+    public abstract void d();
+
+    public abstract void e(int i, float f);
+}

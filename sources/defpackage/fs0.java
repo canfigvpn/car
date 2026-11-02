@@ -1,0 +1,59 @@
+package defpackage;
+
+/* JADX INFO: compiled from: r8-map-id-0bfc939acdb2c2ed066a39909232567106f3dc80b59d530c205412207654b975 */
+/* JADX INFO: loaded from: classes.dex */
+public final /* synthetic */ class fs0 implements mk0 {
+    public static final fs0 a;
+    private static final s12 descriptor;
+
+    static {
+        fs0 fs0Var = new fs0();
+        a = fs0Var;
+        on1 on1Var = new on1("ir.alirezaivaz.mygarage.ui.navigation.IntervalsRoute", fs0Var, 1);
+        on1Var.l("carId", false);
+        descriptor = on1Var;
+    }
+
+    @Override // defpackage.mv0
+    public final Object a(n20 n20Var) {
+        s12 s12Var = descriptor;
+        jv jvVarA = n20Var.A(s12Var);
+        long jZ = 0;
+        boolean z = true;
+        int i = 0;
+        while (z) {
+            int iH = jvVarA.h(s12Var);
+            if (iH == -1) {
+                z = false;
+            } else {
+                if (iH != 0) {
+                    throw new nu0(iH);
+                }
+                jZ = jvVarA.z(s12Var, 0);
+                i = 1;
+            }
+        }
+        jvVarA.p(s12Var);
+        return new hs0(i, jZ);
+    }
+
+    @Override // defpackage.mk0
+    public final mv0[] b() {
+        return new mv0[]{r41.a};
+    }
+
+    @Override // defpackage.mv0
+    public final s12 c() {
+        return descriptor;
+    }
+
+    @Override // defpackage.mv0
+    public final void d(p61 p61Var, Object obj) {
+        hs0 hs0Var = (hs0) obj;
+        hs0Var.getClass();
+        s12 s12Var = descriptor;
+        p61 p61VarU = p61Var.u(s12Var);
+        p61VarU.K(s12Var, 0, hs0Var.a);
+        p61VarU.T(s12Var);
+    }
+}

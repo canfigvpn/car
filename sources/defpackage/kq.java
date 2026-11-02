@@ -1,0 +1,10 @@
+package defpackage;
+
+import android.view.ViewConfiguration;
+
+/* JADX INFO: compiled from: r8-map-id-0bfc939acdb2c2ed066a39909232567106f3dc80b59d530c205412207654b975 */
+/* JADX INFO: loaded from: classes.dex */
+public abstract class kq {
+    public static final long a = ViewConfiguration.getTapTimeout();
+    public static final /* synthetic */ int b = 0;
+}

@@ -1,0 +1,25 @@
+package defpackage;
+
+/* JADX INFO: compiled from: r8-map-id-0bfc939acdb2c2ed066a39909232567106f3dc80b59d530c205412207654b975 */
+/* JADX INFO: loaded from: classes.dex */
+public final class ll {
+    public final float a;
+
+    public ll(float f) {
+        this.a = f;
+    }
+
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || !(obj instanceof ll)) {
+            return false;
+        }
+        return w60.b(0.0f, 0.0f) && w60.b(0.0f, 0.0f) && w60.b(0.0f, 0.0f) && w60.b(this.a, ((ll) obj).a) && w60.b(0.0f, 0.0f);
+    }
+
+    public final int hashCode() {
+        return Float.hashCode(0.0f) + k3.a(this.a, k3.a(0.0f, k3.a(0.0f, Float.hashCode(0.0f) * 31, 31), 31), 31);
+    }
+}

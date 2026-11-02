@@ -1,0 +1,19 @@
+package defpackage;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/* JADX INFO: compiled from: r8-map-id-0bfc939acdb2c2ed066a39909232567106f3dc80b59d530c205412207654b975 */
+/* JADX INFO: loaded from: classes.dex */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface i20 {
+    String c() default "";
+
+    String f() default "";
+
+    int[] l() default {};
+
+    String m() default "";
+
+    int v() default 2;
+}

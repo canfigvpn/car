@@ -1,0 +1,13 @@
+package defpackage;
+
+/* JADX INFO: compiled from: r8-map-id-0bfc939acdb2c2ed066a39909232567106f3dc80b59d530c205412207654b975 */
+/* JADX INFO: loaded from: classes.dex */
+public abstract class qf2 {
+    public static final a90 a = new a90(0, new xc2(2));
+    public static final pf2 b;
+
+    static {
+        long jD = ws0.d(4282550004L);
+        b = new pf2(jD, dr.b(0.4f, jD));
+    }
+}
