@@ -36,22 +36,36 @@ jobs:
           set -euo pipefail
           SDKMANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager -path '*/bin/sdkmanager' 2>/dev/null | sort -V | tail -n 1)"
           if [ -z "$SDKMANAGER" ]; then
-            echo "Android SDK command-line tools (sdkmanager) were not found in $ANDROID_HOME."
-            echo "Available SDK directories:"
-            ls -la "$ANDROID_HOME" || true
+            echo "Android SDK command-line tools (sdkmanager) were not found."
             exit 1
           fi
-          echo "Using SDK manager: $SDKMANAGER"
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
           "$SDKMANAGER" --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
-      - name: Build debug APK
-        run: gradle --no-daemon :app:assembleDebug
+      - name: Build installable debug APK
+        run: gradle --no-daemon clean :app:assembleDebug
+
+      - name: Verify APK package, signature and size
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/apk-badging.txt
+          grep -q "package: name='ir.ef3.mygarage'" /tmp/apk-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$APK"
+          SIZE="$(stat -c%s "$APK")"
+          echo "APK_SIZE_BYTES=$SIZE"
+          if [ "$SIZE" -lt 150000 ]; then
+            echo "APK is unexpectedly small ($SIZE bytes); refusing to publish."
+            exit 1
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyGarage-debug
+          name: MyGarage-v2.2.0-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
+          compression-level: 0
