@@ -233,7 +233,7 @@ public class MainActivity extends Activity {
         body.addView(info);
     }
     void exportBackup(){
-        try{JSONObject j=new JSONObject();j.put("format","mygarage-backup");j.put("version",2);j.put("cars",db.readTable("cars"));j.put("services",db.readTable("services"));
+        try{JSONObject j=new JSONObject();j.put("format","mygarage-backup");j.put("version",2);j.put("cars",db.readTable("cars"));j.put("services",db.readTable("services"));j.put("service_intervals",db.readTable("service_intervals"));j.put("fuel_records",db.readTable("fuel_records"));
             backupPending=j;Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");i.putExtra(Intent.EXTRA_TITLE,"mygarage-backup.json");startActivityForResult(i,EXPORT);
         }catch(Exception e){toast("ساخت فایل پشتیبان ناموفق بود");}
     }
@@ -278,13 +278,16 @@ public class MainActivity extends Activity {
         }
     }
     static class DB extends SQLiteOpenHelper {
-        DB(Context c){super(c,"mygarage_local.db",null,2);}
+        DB(Context c){super(c,"mygarage_local.db",null,3);}
         public void onCreate(SQLiteDatabase d){
             d.execSQL("CREATE TABLE cars(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,model TEXT,km INTEGER DEFAULT 0)");
             d.execSQL("CREATE TABLE services(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,name TEXT,due_km INTEGER DEFAULT 0,due_date TEXT,done INTEGER DEFAULT 0,category TEXT DEFAULT 'عمومی',note TEXT DEFAULT '')");
+            d.execSQL("CREATE TABLE service_intervals(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,name TEXT,interval_km INTEGER DEFAULT 10000,last_km INTEGER DEFAULT 0)");
+            d.execSQL("CREATE TABLE fuel_records(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,liters REAL,price INTEGER,km INTEGER,date TEXT)");
         }
         public void onUpgrade(SQLiteDatabase d,int old,int now){
             if(old<2){try{d.execSQL("ALTER TABLE services ADD COLUMN category TEXT DEFAULT 'عمومی'");}catch(Exception e){}try{d.execSQL("ALTER TABLE services ADD COLUMN note TEXT DEFAULT ''");}catch(Exception e){}}
+            if(old<3){d.execSQL("CREATE TABLE IF NOT EXISTS service_intervals(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,name TEXT,interval_km INTEGER DEFAULT 10000,last_km INTEGER DEFAULT 0)");d.execSQL("CREATE TABLE IF NOT EXISTS fuel_records(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,liters REAL,price INTEGER,km INTEGER,date TEXT)");}
         }
         int count(String table){Cursor c=getReadableDatabase().rawQuery("SELECT COUNT(*) FROM "+table,null);c.moveToFirst();int n=c.getInt(0);c.close();return n;}
         int firstCar(){Cursor c=getReadableDatabase().rawQuery("SELECT id FROM cars ORDER BY id LIMIT 1",null);int n=c.moveToFirst()?c.getInt(0):1;c.close();return n;}
@@ -300,12 +303,14 @@ public class MainActivity extends Activity {
         boolean restore(JSONObject j){
             SQLiteDatabase d=getWritableDatabase();d.beginTransaction();
             try{
-                d.delete("services",null,null);d.delete("cars",null,null);
+                d.delete("services",null,null);d.delete("cars",null,null);d.delete("service_intervals",null,null);d.delete("fuel_records",null,null);
                 JSONArray cars=j.getJSONArray("cars");for(int i=0;i<cars.length();i++){JSONObject o=cars.getJSONObject(i);ContentValues v=new ContentValues();
                     if(o.has("id"))v.put("id",o.optInt("id"));v.put("name",o.optString("name","خودرو"));v.put("model",o.optString("model",""));v.put("km",o.optInt("km",0));d.insertOrThrow("cars",null,v);}
                 JSONArray ss=j.getJSONArray("services");for(int i=0;i<ss.length();i++){JSONObject o=ss.getJSONObject(i);ContentValues v=new ContentValues();
                     if(o.has("id"))v.put("id",o.optInt("id"));v.put("car_id",o.optInt("car_id",1));v.put("name",o.optString("name","سرویس"));v.put("due_km",o.optInt("due_km",0));
                     v.put("due_date",o.optString("due_date",""));v.put("done",o.optInt("done",0));v.put("category",o.optString("category","عمومی"));v.put("note",o.optString("note",""));d.insertOrThrow("services",null,v);}
+                JSONArray intervals=j.optJSONArray("service_intervals");if(intervals!=null)for(int i=0;i<intervals.length();i++){JSONObject o=intervals.getJSONObject(i);ContentValues v=new ContentValues();if(o.has("id"))v.put("id",o.optInt("id"));v.put("car_id",o.optInt("car_id",1));v.put("name",o.optString("name","سرویس"));v.put("interval_km",o.optInt("interval_km",10000));v.put("last_km",o.optInt("last_km",0));d.insertOrThrow("service_intervals",null,v);}
+                JSONArray fuels=j.optJSONArray("fuel_records");if(fuels!=null)for(int i=0;i<fuels.length();i++){JSONObject o=fuels.getJSONObject(i);ContentValues v=new ContentValues();if(o.has("id"))v.put("id",o.optInt("id"));v.put("car_id",o.optInt("car_id",1));v.put("liters",o.optDouble("liters",0));v.put("price",o.optLong("price",0));v.put("km",o.optInt("km",0));v.put("date",o.optString("date",""));d.insertOrThrow("fuel_records",null,v);}
                 d.setTransactionSuccessful();return true;
             }catch(Exception e){return false;}finally{d.endTransaction();}
         }
