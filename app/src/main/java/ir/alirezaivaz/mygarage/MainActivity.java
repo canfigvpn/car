@@ -70,65 +70,41 @@ public class MainActivity extends Activity {
         t.setOnClickListener(v->run.run());return t;
     }
     void shell(String title,String subtitle){
+        getWindow().setStatusBarColor(bg());getWindow().setNavigationBarColor(bg());
+        if(Build.VERSION.SDK_INT>=26)getWindow().getDecorView().setSystemUiVisibility(dark?0:(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
         root=col();root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);root.setBackgroundColor(bg());setContentView(root);
-        LinearLayout header=row();header.setPadding(dp(20),dp(17),dp(20),dp(12));
-        LinearLayout titles=col();
-        TextView h=txt(title,22,true);titles.addView(h);
-        if(subtitle!=null&&!subtitle.isEmpty()){TextView sub=txt(subtitle,11,false);sub.setTextColor(muted());titles.addView(sub);}
-        header.addView(titles,new LinearLayout.LayoutParams(0,-2,1));
-        TextView theme=action(dark?"☼":"☾",()->{dark=!dark;getPreferences(0).edit().putBoolean("dark",dark).apply();renderPage();},false);
-        header.addView(theme,new LinearLayout.LayoutParams(dp(46),dp(42)));
-        root.addView(header);
+        LinearLayout header=row();header.setPadding(dp(16),dp(10),dp(16),dp(10));
+        TextView add=action("＋ افزودن خودرو",()->editCar(),true);header.addView(add,new LinearLayout.LayoutParams(0,dp(44),1));
+        TextView menu=action("⋮",()->topMenu(),false);LinearLayout.LayoutParams mp=new LinearLayout.LayoutParams(dp(48),dp(44));mp.setMargins(dp(8),0,0,0);header.addView(menu,mp);root.addView(header);
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(false);scroll.setClipToPadding(false);
-        body=col();body.setPadding(dp(16),dp(7),dp(16),dp(20));scroll.addView(body);
-        root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
-        bottom=row();bottom.setPadding(dp(8),dp(8),dp(8),dp(9));bottom.setBackgroundColor(cardColor());
-        root.addView(bottom,new LinearLayout.LayoutParams(-1,-2));
-        navItem("خانه","⌂","home");navItem("سرویس‌ها","◷","services");navItem("پشتیبان","▣","backup");
+        body=col();body.setPadding(dp(16),dp(7),dp(16),dp(22));scroll.addView(body);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
+        bottom=row();bottom.setPadding(dp(5),dp(7),dp(5),dp(7));bottom.setBackground(shape(cardColor(),line(),22));
+        LinearLayout.LayoutParams bp=new LinearLayout.LayoutParams(-1,-2);bp.setMargins(dp(12),dp(5),dp(12),dp(8));root.addView(bottom,bp);
+        navItem("خانه","⌂","home");navItem("تاریخچه","◷","history");navItem("سوخت","⛽","fuel");navItem("تنظیمات","⚙","settings");
     }
+    void topMenu(){String[] opts={"بازه‌های سرویس","ویرایش اطلاعات خودرو"};new AlertDialog.Builder(this).setItems(opts,(d,w)->{if(w==0)intervalsPage();else editCar();}).show();}
     void navItem(String label,String icon,String page){
-        LinearLayout item=col();item.setGravity(Gravity.CENTER);item.setPadding(dp(5),dp(4),dp(5),dp(3));
-        TextView a=txt(icon,20,true);a.setGravity(Gravity.CENTER);a.setTextColor(currentPage.equals(page)?GOLD:muted());item.addView(a);
+        LinearLayout item=col();item.setGravity(Gravity.CENTER);item.setPadding(dp(3),dp(5),dp(3),dp(5));
+        TextView a=txt(icon,19,true);a.setGravity(Gravity.CENTER);a.setTextColor(currentPage.equals(page)?GOLD:muted());item.addView(a);
         TextView b=txt(label,10,true);b.setGravity(Gravity.CENTER);b.setTextColor(currentPage.equals(page)?GOLD:muted());item.addView(b);
-        item.setOnClickListener(v->{if(page.equals("home"))home();else if(page.equals("services"))services();else backupPage();});
+        item.setOnClickListener(v->{if(page.equals("home"))home();else if(page.equals("history"))historyPage();else if(page.equals("fuel"))fuelPage();else settingsPage();});
         bottom.addView(item,new LinearLayout.LayoutParams(0,-2,1));
     }
-    void renderPage(){if("services".equals(currentPage))services();else if("backup".equals(currentPage))backupPage();else home();}
+    void renderPage(){if("intervals".equals(currentPage))intervalsPage();else if("history".equals(currentPage))historyPage();else if("fuel".equals(currentPage))fuelPage();else if("settings".equals(currentPage))settingsPage();else if("services".equals(currentPage))services();else if("backup".equals(currentPage))backupPage();else home();}
     void home(){
-        currentPage="home";shell("خودرو من","مدیریت و نگه‌داری خودروی شما");
-        int km=db.carKm(carId);String name=db.carName(carId);
-        LinearLayout hero=card();hero.setBackground(shape(dark?Color.rgb(42,38,31):Color.rgb(250,246,235),GOLD,24));
-        TextView eyebrow=txt("GARAGE  /  OVERVIEW",10,true);eyebrow.setTextColor(GOLD);hero.addView(eyebrow);
-        space(hero,8);hero.addView(txt(name+"  "+db.carModel(carId),20,true));
-        space(hero,15);TextView value=txt(String.format(Locale.US,"%,d",km),34,true);value.setTextColor(dark?GOLD_LIGHT:Color.rgb(139,101,43));hero.addView(value);
-        TextView unit=txt("کیلومتر کارکرد",11,false);unit.setTextColor(muted());hero.addView(unit);
-        space(hero,15);LinearLayout controls=row();
-        controls.addView(action("ویرایش کیلومتر  ✎",()->editMileage(),true),new LinearLayout.LayoutParams(0,-2,1));
-        View sp=new View(this);controls.addView(sp,new LinearLayout.LayoutParams(dp(8),1));
-        controls.addView(action("مشخصات خودرو",()->editCar(),false),new LinearLayout.LayoutParams(0,-2,1));hero.addView(controls);
-        body.addView(hero);space(body,13);
-
-        int overdue=db.overdueCount(km), upcoming=db.upcomingCount(km);
-        LinearLayout stats=row();
-        stats.addView(statCard("سررسید گذشته",String.valueOf(overdue),"نیازمند رسیدگی",overdue>0),new LinearLayout.LayoutParams(0,-2,1));
-        View gap=new View(this);stats.addView(gap,new LinearLayout.LayoutParams(dp(9),1));
-        stats.addView(statCard("نزدیک به موعد",String.valueOf(upcoming),"در آستانه سرویس",false),new LinearLayout.LayoutParams(0,-2,1));
-        body.addView(stats);space(body,18);
-        body.addView(txt("دسترسی سریع",17,true));space(body,9);
-        LinearLayout quick=row();
-        quick.addView(action("＋ ثبت سرویس",()->serviceDialog(0),true),new LinearLayout.LayoutParams(0,-2,1));
-        View qg=new View(this);quick.addView(qg,new LinearLayout.LayoutParams(dp(8),1));
-        quick.addView(action("مشاهده برنامه",()->services(),false),new LinearLayout.LayoutParams(0,-2,1));body.addView(quick);
-        space(body,18);body.addView(txt("وضعیت نگه‌داری",17,true));space(body,9);
-        LinearLayout status=card();
-        int total=db.openCount(), done=db.doneCount();
-        status.addView(txt(total==0?"هنوز سرویسی ثبت نشده":"خلاصه وضعیت سرویس‌ها",14,true));space(status,8);
-        TextView detail=txt("سرویس‌های فعال: "+total+"     انجام‌شده: "+done,12,false);detail.setTextColor(muted());status.addView(detail);
-        space(status,11);
-        status.addView(action("رفتن به مدیریت سرویس‌ها  ←",()->services(),false));body.addView(status);
-        space(body,17);body.addView(txt("سرویس‌های مهم",17,true));space(body,9);
-        showServices(body,km,true);
-        space(body,8);body.addView(action("پشتیبان‌گیری و بازیابی",()->backupPage(),false));
+        currentPage="home";shell("خودرو من",db.carName(carId)+"  ·  "+db.carModel(carId));int km=db.carKm(carId);ensureIntervals();
+        LinearLayout hero=card();hero.setBackground(shape(dark?Color.rgb(35,39,45):Color.rgb(250,248,242),GOLD,24));
+        LinearLayout top=row();TextView label=txt("کیلومتر فعلی",15,true);top.addView(label,new LinearLayout.LayoutParams(0,dp(38),1));top.addView(action("✎",()->editMileage(),false),new LinearLayout.LayoutParams(dp(44),dp(40)));hero.addView(top);space(hero,12);
+        LinearLayout digits=row();digits.setGravity(Gravity.CENTER);String number=String.format(Locale.US,"%07d",Math.min(9999999,Math.max(0,km)));
+        for(int i=0;i<number.length();i++){TextView digit=txt(number.substring(i,i+1),27,true);digit.setGravity(Gravity.CENTER);digit.setTextColor(GOLD_LIGHT);digit.setBackground(shape(Color.rgb(13,17,22),Color.rgb(74,78,82),9));LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(58),1);p.setMargins(dp(2),0,dp(2),0);digits.addView(digit,p);}
+        hero.addView(digits);space(hero,7);TextView unit=txt("KM  ·  کیلومتر",10,true);unit.setGravity(Gravity.CENTER);unit.setTextColor(muted());hero.addView(unit);body.addView(hero);space(body,20);
+        body.addView(txt("وضعیت سلامت سرویس‌ها",18,true));space(body,10);int near=0,updated=0,unregistered=0;
+        Cursor sc=db.getReadableDatabase().rawQuery("SELECT last_km,interval_km FROM service_intervals WHERE car_id=?",new String[]{""+carId});
+        while(sc.moveToNext()){int last=sc.getInt(0),interval=sc.getInt(1);if(last<=0)unregistered++;else if(interval>0&&km-last>=interval-500)near++;else updated++;}sc.close();
+        LinearLayout stats=row();stats.addView(statCard("نزدیک به سرویس",""+near,"نیازمند بررسی",near>0),new LinearLayout.LayoutParams(0,-2,1));
+        View gap=new View(this);stats.addView(gap,new LinearLayout.LayoutParams(dp(6),1));stats.addView(statCard("سرویس به‌روز",""+updated,"در محدوده مجاز",false),new LinearLayout.LayoutParams(0,-2,1));
+        View gap2=new View(this);stats.addView(gap2,new LinearLayout.LayoutParams(dp(6),1));stats.addView(statCard("ثبت نشده",""+unregistered,"بدون سابقه",false),new LinearLayout.LayoutParams(0,-2,1));body.addView(stats);space(body,18);
+        body.addView(txt("موارد نگه‌داری خودرو",17,true));space(body,9);showIntervalGrid(body,km);space(body,15);body.addView(action("＋ ثبت سرویس جدید",()->serviceDialog(0),true));
     }
     LinearLayout statCard(String title,String value,String hint,boolean warning){
         LinearLayout c=card();TextView a=txt(title,11,false);a.setTextColor(muted());c.addView(a);space(c,5);
