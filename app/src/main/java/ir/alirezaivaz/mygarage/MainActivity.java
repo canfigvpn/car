@@ -43,7 +43,17 @@ public class MainActivity extends Activity {
     int dp(float n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
     void ensureCar(){
         if(db.count("cars")==0){ContentValues v=new ContentValues();v.put("name","پژو ۲۰۶");v.put("model","۲۰۶");v.put("km",0);db.getWritableDatabase().insert("cars",null,v);}
-        carId=db.firstCar();
+        int saved=getPreferences(0).getInt("active_car_id",db.firstCar());
+        Cursor c=db.getReadableDatabase().rawQuery("SELECT id FROM cars WHERE id=?",new String[]{""+saved});
+        carId=c.moveToFirst()?saved:db.firstCar();c.close();
+        getPreferences(0).edit().putInt("active_car_id",carId).apply();
+    }
+    void addCarDialog(){
+        EditText name=field("نام خودرو"),model=field("مدل خودرو"),km=field("کیلومتر فعلی");
+        name.setText("خودرو جدید");km.setInputType(2);km.setText("0");
+        LinearLayout box=col();box.addView(name);space(box,6);box.addView(model);space(box,6);box.addView(km);
+        new AlertDialog.Builder(this).setTitle("افزودن خودرو").setView(wrap(box)).setNegativeButton("انصراف",null)
+        .setPositiveButton("افزودن",(d,w)->{try{String n=name.getText().toString().trim(),m=model.getText().toString().trim();int k=Integer.parseInt(km.getText().toString().trim());if(n.isEmpty()||k<0)throw new Exception();ContentValues v=new ContentValues();v.put("name",n);v.put("model",m);v.put("km",k);long id=db.getWritableDatabase().insertOrThrow("cars",null,v);carId=(int)id;getPreferences(0).edit().putInt("active_car_id",carId).apply();home();toast("خودرو اضافه شد");}catch(Exception ex){toast("اطلاعات خودرو معتبر نیست");}}).show();
     }
     GradientDrawable shape(int color,int stroke,int radius){
         GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));d.setStroke(dp(1),stroke);return d;
@@ -74,7 +84,7 @@ public class MainActivity extends Activity {
         if(Build.VERSION.SDK_INT>=26)getWindow().getDecorView().setSystemUiVisibility(dark?0:(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
         root=col();root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);root.setBackgroundColor(bg());setContentView(root);
         LinearLayout header=row();header.setPadding(dp(16),dp(10),dp(16),dp(10));
-        TextView add=action("＋ افزودن خودرو",()->editCar(),true);header.addView(add,new LinearLayout.LayoutParams(0,dp(44),1));
+        TextView add=action("＋ افزودن خودرو",()->addCarDialog(),true);header.addView(add,new LinearLayout.LayoutParams(0,dp(44),1));
         TextView menu=action("⋮",()->topMenu(),false);LinearLayout.LayoutParams mp=new LinearLayout.LayoutParams(dp(48),dp(44));mp.setMargins(dp(8),0,0,0);header.addView(menu,mp);root.addView(header);
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(false);scroll.setClipToPadding(false);
         body=col();body.setPadding(dp(16),dp(7),dp(16),dp(22));scroll.addView(body);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
