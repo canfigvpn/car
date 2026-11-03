@@ -80,16 +80,30 @@ public class MainActivity extends Activity {
         t.setOnClickListener(v->run.run());return t;
     }
     void shell(String title,String subtitle){
+        if(Build.VERSION.SDK_INT>=30)getWindow().setDecorFitsSystemWindows(false);
         getWindow().setStatusBarColor(bg());getWindow().setNavigationBarColor(bg());
         if(Build.VERSION.SDK_INT>=26)getWindow().getDecorView().setSystemUiVisibility(dark?0:(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR));
-        root=col();root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);root.setBackgroundColor(bg());setContentView(root);
-        LinearLayout header=row();header.setPadding(dp(16),dp(10),dp(16),dp(10));
-        TextView add=action("＋ افزودن خودرو",()->addCarDialog(),true);header.addView(add,new LinearLayout.LayoutParams(0,dp(44),1));
-        TextView menu=action("⋮",()->topMenu(),false);LinearLayout.LayoutParams mp=new LinearLayout.LayoutParams(dp(48),dp(44));mp.setMargins(dp(8),0,0,0);header.addView(menu,mp);root.addView(header);
+        if(Build.VERSION.SDK_INT>=29)getWindow().setNavigationBarContrastEnforced(false);
+        root=col();root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);root.setBackgroundColor(bg());
+        root.setOnApplyWindowInsetsListener((v,insets)->{
+            int topInset=0,bottomInset=0;
+            if(Build.VERSION.SDK_INT>=30){
+                android.graphics.Insets bars=insets.getInsets(android.view.WindowInsets.Type.systemBars());
+                topInset=bars.top;bottomInset=bars.bottom;
+            }else{
+                topInset=insets.getSystemWindowInsetTop();bottomInset=insets.getSystemWindowInsetBottom();
+            }
+            v.setPadding(0,topInset,0,bottomInset);
+            return insets;
+        });
+        setContentView(root);root.requestApplyInsets();
+        LinearLayout header=row();header.setPadding(dp(16),dp(8),dp(16),dp(8));
+        TextView add=action("＋ افزودن خودرو",()->addCarDialog(),true);header.addView(add,new LinearLayout.LayoutParams(0,dp(42),1));
+        TextView menu=action("⋮",()->topMenu(),false);LinearLayout.LayoutParams mp=new LinearLayout.LayoutParams(dp(48),dp(42));mp.setMargins(dp(8),0,0,0);header.addView(menu,mp);root.addView(header);
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(false);scroll.setClipToPadding(false);
-        body=col();body.setPadding(dp(16),dp(7),dp(16),dp(22));scroll.addView(body);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
-        bottom=row();bottom.setPadding(dp(5),dp(7),dp(5),dp(7));bottom.setBackground(shape(cardColor(),line(),22));
-        LinearLayout.LayoutParams bp=new LinearLayout.LayoutParams(-1,-2);bp.setMargins(dp(12),dp(5),dp(12),dp(8));root.addView(bottom,bp);
+        body=col();body.setPadding(dp(14),dp(6),dp(14),dp(18));scroll.addView(body);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
+        bottom=row();bottom.setPadding(dp(5),dp(5),dp(5),dp(5));bottom.setBackground(shape(cardColor(),line(),22));
+        LinearLayout.LayoutParams bp=new LinearLayout.LayoutParams(-1,-2);bp.setMargins(dp(12),dp(4),dp(12),dp(4));root.addView(bottom,bp);
         navItem("خانه","⌂","home");navItem("تاریخچه","◷","history");navItem("سوخت","⛽","fuel");navItem("تنظیمات","⚙","settings");
     }
     void topMenu(){String[] opts={"بازه‌های سرویس","ویرایش اطلاعات خودرو"};new AlertDialog.Builder(this).setItems(opts,(d,w)->{if(w==0)intervalsPage();else editCar();}).show();}
@@ -111,29 +125,57 @@ public class MainActivity extends Activity {
         body.addView(txt("وضعیت سلامت سرویس‌ها",18,true));space(body,10);int near=0,updated=0,unregistered=0;
         Cursor sc=db.getReadableDatabase().rawQuery("SELECT last_km,interval_km FROM service_intervals WHERE car_id=?",new String[]{""+carId});
         while(sc.moveToNext()){int last=sc.getInt(0),interval=sc.getInt(1);if(last<=0)unregistered++;else if(interval>0&&km-last>=interval-500)near++;else updated++;}sc.close();
-        LinearLayout stats=row();stats.addView(statCard("نزدیک به سرویس",""+near,"نیازمند بررسی",near>0),new LinearLayout.LayoutParams(0,-2,1));
-        View gap=new View(this);stats.addView(gap,new LinearLayout.LayoutParams(dp(6),1));stats.addView(statCard("سرویس به‌روز",""+updated,"در محدوده مجاز",false),new LinearLayout.LayoutParams(0,-2,1));
-        View gap2=new View(this);stats.addView(gap2,new LinearLayout.LayoutParams(dp(6),1));stats.addView(statCard("ثبت نشده",""+unregistered,"بدون سابقه",false),new LinearLayout.LayoutParams(0,-2,1));body.addView(stats);space(body,18);
-        body.addView(txt("موارد نگه‌داری خودرو",17,true));space(body,9);showIntervalGrid(body,km);space(body,15);body.addView(action("＋ ثبت سرویس جدید",()->serviceDialog(0),true));
+        showStatusSection(body,"نزدیک به سرویس",0,km,near);space(body,9);
+        showStatusSection(body,"سرویس به‌روز",1,km,updated);space(body,9);
+        showStatusSection(body,"سرویس ثبت نشده",2,km,unregistered);space(body,18);
+        body.addView(txt("تمام موارد نگه‌داری خودرو",17,true));space(body,9);showIntervalGrid(body,km);space(body,15);body.addView(action("＋ ثبت سرویس جدید",()->serviceDialog(0),true));
     }
     LinearLayout statCard(String title,String value,String hint,boolean warning){
         LinearLayout c=card();TextView a=txt(title,11,false);a.setTextColor(muted());c.addView(a);space(c,5);
         TextView b=txt(value,25,true);b.setTextColor(warning?Color.rgb(218,130,93):GOLD);c.addView(b);
         TextView d=txt(hint,10,false);d.setTextColor(muted());c.addView(d);return c;
     }
+    void showStatusSection(LinearLayout target,String title,int group,int km,int count){
+        LinearLayout section=card();section.setPadding(dp(14),dp(13),dp(14),dp(13));
+        LinearLayout header=row();TextView h=txt(title,14,true);header.addView(h,new LinearLayout.LayoutParams(0,-2,1));
+        TextView n=txt(String.valueOf(count),16,true);n.setTextColor(group==0?Color.rgb(220,145,86):(group==1?Color.rgb(91,177,139):muted()));header.addView(n);section.addView(header);space(section,8);
+        Cursor c=db.getReadableDatabase().rawQuery("SELECT id,name,interval_km,last_km FROM service_intervals WHERE car_id=? ORDER BY id",new String[]{""+carId});
+        int shown=0;
+        while(c.moveToNext()){
+            int id=c.getInt(0),interval=c.getInt(2),last=c.getInt(3);
+            int actual=last<=0?2:((interval>0&&km-last>=interval-500)?0:1);
+            if(actual!=group)continue;
+            LinearLayout lineRow=row();TextView name=txt(c.getString(1),12,true);lineRow.addView(name,new LinearLayout.LayoutParams(0,dp(36),1));
+            TextView detail=txt(last>0?String.format(Locale.US,"%,d km",last):"بدون سابقه",10,false);detail.setTextColor(muted());lineRow.addView(detail);
+            lineRow.setOnClickListener(v->serviceRecordDialog(id,cSafeName(id)));
+            section.addView(lineRow);View divider=new View(this);divider.setBackgroundColor(line());section.addView(divider,new LinearLayout.LayoutParams(-1,dp(1)));shown++;
+        }
+        c.close();
+        if(shown==0)section.addView(txt("موردی در این وضعیت وجود ندارد.",11,false));
+        target.addView(section);
+    }
+    String cSafeName(int id){Cursor c=db.getReadableDatabase().rawQuery("SELECT name FROM service_intervals WHERE id=?",new String[]{""+id});String n=c.moveToFirst()?c.getString(0):"سرویس";c.close();return n;}
     static final String[] DEFAULT_INTERVALS={"تسمه دینام","تنظیم باد","باتری","فیلتر هوا","لنت ترمز جلو","روغن ترمز","فیلتر کابین","لنت ترمز عقب","ضدیخ و ضدجوش","دیسک و صفحه کلاچ","فیلتر بنزین","روغن موتور","بیمه","روغن گیربکس","فیلتر روغن","شمع و وایرها","معاینه فنی","روغن هیدرولیک","تسمه تایم","ترموستات","تنظیم فرمان و بالانس","جابه‌جایی لاستیک"};
     void ensureIntervals(){SQLiteDatabase d=db.getWritableDatabase();for(String name:DEFAULT_INTERVALS){Cursor c=d.rawQuery("SELECT id FROM service_intervals WHERE car_id=? AND name=?",new String[]{""+carId,name});boolean exists=c.moveToFirst();c.close();if(!exists){ContentValues v=new ContentValues();v.put("car_id",carId);v.put("name",name);v.put("interval_km",defaultInterval(name));v.put("last_km",0);d.insert("service_intervals",null,v);}}}
     int defaultInterval(String n){if(n.contains("روغن موتور")||n.contains("فیلتر روغن"))return 5000;if(n.contains("فیلتر هوا")||n.contains("فیلتر کابین"))return 10000;if(n.contains("شمع"))return 30000;if(n.contains("تسمه تایم"))return 60000;if(n.contains("ضدیخ")||n.contains("روغن ترمز")||n.contains("گیربکس"))return 40000;if(n.contains("لنت")||n.contains("دیسک"))return 30000;if(n.contains("بنزین"))return 20000;if(n.contains("دینام"))return 50000;if(n.contains("لاستیک")||n.contains("باد")||n.contains("بالانس"))return 10000;return 20000;}
     void showIntervalGrid(LinearLayout target,int km){
         Cursor c=db.getReadableDatabase().rawQuery("SELECT id,name,interval_km,last_km FROM service_intervals WHERE car_id=? ORDER BY id",new String[]{""+carId});LinearLayout r=null;int i=0;
-        while(c.moveToNext()){int id=c.getInt(0),interval=c.getInt(2),last=c.getInt(3);String name=c.getString(1);if(i%2==0){r=row();target.addView(r);}
-            LinearLayout item=card();item.setPadding(dp(10),dp(11),dp(10),dp(11));TextView ico=txt(serviceIcon(name),22,true);ico.setGravity(Gravity.CENTER);ico.setTextColor(GOLD);item.addView(ico);
-            TextView title=txt(name,12,true);title.setGravity(Gravity.CENTER);title.setMinHeight(dp(35));item.addView(title);String status=last<=0?"سرویس ثبت نشده":(interval>0&&km-last>=interval-500?"نزدیک به سرویس":"سرویس به‌روز");
+        while(c.moveToNext()){
+            int id=c.getInt(0),interval=c.getInt(2),last=c.getInt(3);String name=c.getString(1);
+            if(i%2==0){r=row();target.addView(r);}
+            LinearLayout item=card();item.setPadding(dp(10),dp(11),dp(10),dp(11));
+            TextView ico=txt(serviceIcon(name),22,true);ico.setGravity(Gravity.CENTER);ico.setTextColor(GOLD);item.addView(ico);
+            TextView title=txt(name,12,true);title.setGravity(Gravity.CENTER);title.setMinHeight(dp(35));item.addView(title);
+            String status=last<=0?"سرویس ثبت نشده":(interval>0&&km-last>=interval-500?"نزدیک به سرویس":"سرویس به‌روز");
             TextView st=txt(status,10,true);st.setGravity(Gravity.CENTER);st.setTextColor(last<=0?muted():(status.startsWith("نزدیک")?Color.rgb(220,145,86):Color.rgb(91,177,139)));item.addView(st);
             TextView info=txt(last>0?"آخرین ثبت: "+last+" km":"بازه: هر "+interval+" km",9,false);info.setGravity(Gravity.CENTER);info.setTextColor(muted());item.addView(info);space(item,7);
-            item.addView(action("ثبت انجام سرویس",()->{ContentValues v=new ContentValues();v.put("last_km",db.carKm(carId));db.getWritableDatabase().update("service_intervals",v,"id=?",new String[]{""+id});home();},false));
-            item.setOnLongClickListener(v->{intervalDialog(id,name,interval);return true;});LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,-2,1);p.setMargins(dp(3),dp(3),dp(3),dp(7));r.addView(item,p);i++;
-        }c.close();if(i%2==1){View blank=new View(this);r.addView(blank,new LinearLayout.LayoutParams(0,1,1));}}
+            item.addView(action("ثبت اطلاعات سرویس",()->serviceRecordDialog(id,name),true));
+            item.setOnClickListener(v->serviceRecordDialog(id,name));
+            item.setOnLongClickListener(v->{intervalDialog(id,name,interval);return true;});
+            LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,-2,1);p.setMargins(dp(3),dp(3),dp(3),dp(7));r.addView(item,p);i++;
+        }
+        c.close();if(i%2==1){View blank=new View(this);r.addView(blank,new LinearLayout.LayoutParams(0,1,1));}
+    }
     String serviceIcon(String n){if(n.contains("روغن"))return "◉";if(n.contains("ترمز")||n.contains("لنت"))return "◎";if(n.contains("باتری"))return "▣";if(n.contains("لاستیک")||n.contains("باد"))return "◌";if(n.contains("فیلتر"))return "▤";if(n.contains("تسمه"))return "⟳";if(n.contains("بیمه"))return "◇";if(n.contains("شمع"))return "✦";return "⚙";}
     void intervalsPage(){currentPage="intervals";shell("بازه‌های سرویس","مدیریت زمان و کیلومتر نگه‌داری");ensureIntervals();body.addView(action("＋ افزودن مورد جدید به بازه‌های سرویس",()->intervalDialog(0,"",10000),true));space(body,12);TextView hint=txt("برای ویرایش هر مورد، آن را چند لحظه نگه دارید.",11,false);hint.setTextColor(muted());body.addView(hint);space(body,8);showIntervalGrid(body,db.carKm(carId));}
     void intervalDialog(int id,String old,int oldInterval){EditText name=field("نام سرویس"),period=field("بازه بر حسب کیلومتر");name.setText(old);period.setInputType(2);period.setText(""+oldInterval);LinearLayout box=col();box.addView(name);space(box,7);box.addView(period);new AlertDialog.Builder(this).setTitle(id==0?"افزودن بازه سرویس":"ویرایش بازه سرویس").setView(wrap(box)).setNegativeButton("انصراف",null).setPositiveButton("ذخیره",(d,w)->{String n=name.getText().toString().trim();try{int km=Integer.parseInt(period.getText().toString().trim());if(n.isEmpty()||km<1)throw new Exception();ContentValues v=new ContentValues();v.put("car_id",carId);v.put("name",n);v.put("interval_km",km);if(id==0){v.put("last_km",0);db.getWritableDatabase().insert("service_intervals",null,v);}else db.getWritableDatabase().update("service_intervals",v,"id=?",new String[]{""+id});intervalsPage();}catch(Exception ex){toast("نام و بازه معتبر وارد کنید");}}).show();}
@@ -190,6 +232,36 @@ public class MainActivity extends Activity {
             scheduleDaily();if("services".equals(currentPage))services();else home();
         }).show();
     }
+    void serviceRecordDialog(int intervalId,String serviceName){
+        EditText date=field("تاریخ انجام سرویس (مثلاً ۱۴۰۵/۰۸/۱۲)");
+        EditText km=field("کیلومتر انجام سرویس");
+        EditText cost=field("هزینه سرویس (تومان)");
+        EditText note=field("یادداشت (اختیاری)");
+        date.setText(new SimpleDateFormat("yyyy/MM/dd",new Locale("fa","IR")).format(new Date()));
+        km.setInputType(2);km.setText(String.valueOf(db.carKm(carId)));
+        cost.setInputType(2);
+        LinearLayout box=col();
+        TextView type=txt("نوع سرویس: "+serviceName,14,true);type.setPadding(0,dp(4),0,dp(8));box.addView(type);
+        box.addView(date);space(box,7);
+        LinearLayout kmRow=row();kmRow.addView(km,new LinearLayout.LayoutParams(0,dp(50),1));
+        TextView current=action("کیلومتر فعلی",()->km.setText(String.valueOf(db.carKm(carId))),true);
+        LinearLayout.LayoutParams currentP=new LinearLayout.LayoutParams(dp(112),dp(48));currentP.setMargins(dp(7),0,0,0);kmRow.addView(current,currentP);
+        box.addView(kmRow);space(box,7);box.addView(cost);space(box,7);box.addView(note);
+        new AlertDialog.Builder(this).setTitle("ثبت اطلاعات سرویس").setView(wrap(box))
+        .setNegativeButton("انصراف",null).setPositiveButton("ذخیره",(d,w)->{
+            String ds=date.getText().toString().trim(),ks=km.getText().toString().trim(),cs=cost.getText().toString().trim(),nt=note.getText().toString().trim();
+            int serviceKm;long amount;
+            try{serviceKm=Integer.parseInt(ks);amount=cs.isEmpty()?0:Long.parseLong(cs);if(serviceKm<0||amount<0||ds.isEmpty())throw new Exception();}
+            catch(Exception ex){toast("تاریخ، کیلومتر و هزینه را بررسی کنید");return;}
+            SQLiteDatabase database=db.getWritableDatabase();ContentValues log=new ContentValues();
+            log.put("car_id",carId);log.put("interval_id",intervalId);log.put("service_name",serviceName);
+            log.put("service_date",ds);log.put("km",serviceKm);log.put("cost",amount);log.put("note",nt);
+            database.insertOrThrow("service_logs",null,log);
+            ContentValues update=new ContentValues();update.put("last_km",serviceKm);
+            database.update("service_intervals",update,"id=? AND car_id=?",new String[]{""+intervalId,""+carId});
+            home();toast("سوابق سرویس ذخیره شد");
+        }).show();
+    }
     boolean validDate(String s){try{SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd",Locale.US);f.setLenient(false);f.parse(s);return s.length()==10;}catch(Exception e){return false;}}
     boolean dateOverdue(String s){if(s==null||s.isEmpty())return false;try{SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd",Locale.US);f.setLenient(false);return f.parse(s).getTime()<dayStart();}catch(Exception e){return false;}}
     long dayStart(){Calendar c=Calendar.getInstance();c.set(Calendar.HOUR_OF_DAY,0);c.set(Calendar.MINUTE,0);c.set(Calendar.SECOND,0);c.set(Calendar.MILLISECOND,0);return c.getTimeInMillis();}
@@ -243,7 +315,7 @@ public class MainActivity extends Activity {
         body.addView(info);
     }
     void exportBackup(){
-        try{JSONObject j=new JSONObject();j.put("format","mygarage-backup");j.put("version",2);j.put("cars",db.readTable("cars"));j.put("services",db.readTable("services"));j.put("service_intervals",db.readTable("service_intervals"));j.put("fuel_records",db.readTable("fuel_records"));
+        try{JSONObject j=new JSONObject();j.put("format","mygarage-backup");j.put("version",2);j.put("cars",db.readTable("cars"));j.put("services",db.readTable("services"));j.put("service_intervals",db.readTable("service_intervals"));j.put("fuel_records",db.readTable("fuel_records"));j.put("service_logs",db.readTable("service_logs"));
             backupPending=j;Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");i.putExtra(Intent.EXTRA_TITLE,"mygarage-backup.json");startActivityForResult(i,EXPORT);
         }catch(Exception e){toast("ساخت فایل پشتیبان ناموفق بود");}
     }
@@ -288,16 +360,18 @@ public class MainActivity extends Activity {
         }
     }
     static class DB extends SQLiteOpenHelper {
-        DB(Context c){super(c,"mygarage_local.db",null,3);}
+        DB(Context c){super(c,"mygarage_local.db",null,4);}
         public void onCreate(SQLiteDatabase d){
             d.execSQL("CREATE TABLE cars(id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT,model TEXT,km INTEGER DEFAULT 0)");
             d.execSQL("CREATE TABLE services(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,name TEXT,due_km INTEGER DEFAULT 0,due_date TEXT,done INTEGER DEFAULT 0,category TEXT DEFAULT 'عمومی',note TEXT DEFAULT '')");
             d.execSQL("CREATE TABLE service_intervals(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,name TEXT,interval_km INTEGER DEFAULT 10000,last_km INTEGER DEFAULT 0)");
             d.execSQL("CREATE TABLE fuel_records(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,liters REAL,price INTEGER,km INTEGER,date TEXT)");
+            d.execSQL("CREATE TABLE service_logs(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,interval_id INTEGER,service_name TEXT,service_date TEXT,km INTEGER,cost INTEGER,note TEXT)");
         }
         public void onUpgrade(SQLiteDatabase d,int old,int now){
             if(old<2){try{d.execSQL("ALTER TABLE services ADD COLUMN category TEXT DEFAULT 'عمومی'");}catch(Exception e){}try{d.execSQL("ALTER TABLE services ADD COLUMN note TEXT DEFAULT ''");}catch(Exception e){}}
             if(old<3){d.execSQL("CREATE TABLE IF NOT EXISTS service_intervals(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,name TEXT,interval_km INTEGER DEFAULT 10000,last_km INTEGER DEFAULT 0)");d.execSQL("CREATE TABLE IF NOT EXISTS fuel_records(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,liters REAL,price INTEGER,km INTEGER,date TEXT)");}
+            if(old<4){d.execSQL("CREATE TABLE IF NOT EXISTS service_logs(id INTEGER PRIMARY KEY AUTOINCREMENT,car_id INTEGER,interval_id INTEGER,service_name TEXT,service_date TEXT,km INTEGER,cost INTEGER,note TEXT)");}
         }
         int count(String table){Cursor c=getReadableDatabase().rawQuery("SELECT COUNT(*) FROM "+table,null);c.moveToFirst();int n=c.getInt(0);c.close();return n;}
         int firstCar(){Cursor c=getReadableDatabase().rawQuery("SELECT id FROM cars ORDER BY id LIMIT 1",null);int n=c.moveToFirst()?c.getInt(0):1;c.close();return n;}
@@ -313,7 +387,7 @@ public class MainActivity extends Activity {
         boolean restore(JSONObject j){
             SQLiteDatabase d=getWritableDatabase();d.beginTransaction();
             try{
-                d.delete("services",null,null);d.delete("cars",null,null);d.delete("service_intervals",null,null);d.delete("fuel_records",null,null);
+                d.delete("services",null,null);d.delete("cars",null,null);d.delete("service_intervals",null,null);d.delete("fuel_records",null,null);d.delete("service_logs",null,null);
                 JSONArray cars=j.getJSONArray("cars");for(int i=0;i<cars.length();i++){JSONObject o=cars.getJSONObject(i);ContentValues v=new ContentValues();
                     if(o.has("id"))v.put("id",o.optInt("id"));v.put("name",o.optString("name","خودرو"));v.put("model",o.optString("model",""));v.put("km",o.optInt("km",0));d.insertOrThrow("cars",null,v);}
                 JSONArray ss=j.getJSONArray("services");for(int i=0;i<ss.length();i++){JSONObject o=ss.getJSONObject(i);ContentValues v=new ContentValues();
@@ -321,6 +395,7 @@ public class MainActivity extends Activity {
                     v.put("due_date",o.optString("due_date",""));v.put("done",o.optInt("done",0));v.put("category",o.optString("category","عمومی"));v.put("note",o.optString("note",""));d.insertOrThrow("services",null,v);}
                 JSONArray intervals=j.optJSONArray("service_intervals");if(intervals!=null)for(int i=0;i<intervals.length();i++){JSONObject o=intervals.getJSONObject(i);ContentValues v=new ContentValues();if(o.has("id"))v.put("id",o.optInt("id"));v.put("car_id",o.optInt("car_id",1));v.put("name",o.optString("name","سرویس"));v.put("interval_km",o.optInt("interval_km",10000));v.put("last_km",o.optInt("last_km",0));d.insertOrThrow("service_intervals",null,v);}
                 JSONArray fuels=j.optJSONArray("fuel_records");if(fuels!=null)for(int i=0;i<fuels.length();i++){JSONObject o=fuels.getJSONObject(i);ContentValues v=new ContentValues();if(o.has("id"))v.put("id",o.optInt("id"));v.put("car_id",o.optInt("car_id",1));v.put("liters",o.optDouble("liters",0));v.put("price",o.optLong("price",0));v.put("km",o.optInt("km",0));v.put("date",o.optString("date",""));d.insertOrThrow("fuel_records",null,v);}
+                JSONArray logs=j.optJSONArray("service_logs");if(logs!=null)for(int i=0;i<logs.length();i++){JSONObject o=logs.getJSONObject(i);ContentValues v=new ContentValues();if(o.has("id"))v.put("id",o.optInt("id"));v.put("car_id",o.optInt("car_id",1));v.put("interval_id",o.optInt("interval_id",0));v.put("service_name",o.optString("service_name","سرویس"));v.put("service_date",o.optString("service_date",""));v.put("km",o.optInt("km",0));v.put("cost",o.optLong("cost",0));v.put("note",o.optString("note",""));d.insertOrThrow("service_logs",null,v);}
                 d.setTransactionSuccessful();return true;
             }catch(Exception e){return false;}finally{d.endTransaction();}
         }
