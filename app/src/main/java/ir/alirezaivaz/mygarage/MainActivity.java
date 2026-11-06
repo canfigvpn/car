@@ -14,8 +14,6 @@ import android.webkit.WebResourceRequest;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.database.Cursor;
-import android.provider.OpenableColumns;
 
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
