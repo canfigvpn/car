@@ -3,17 +3,22 @@ package ir.alirezaivaz.mygarage;
 import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
-import android.view.View;
-import android.view.WindowInsets;
-import android.graphics.Insets;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.view.WindowInsets;
+import android.graphics.Insets;
 import android.widget.FrameLayout;
 
 public class MainActivity extends Activity {
     private WebView web;
+    public final class BackBridge {
+        @JavascriptInterface public void exit() {
+            runOnUiThread(() -> MainActivity.this.finish());
+        }
+    }
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
         getWindow().setStatusBarColor(Color.rgb(16,24,32));
@@ -37,6 +42,7 @@ public class MainActivity extends Activity {
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
         s.setDisplayZoomControls(false);
+        web.addJavascriptInterface(new BackBridge(), "AndroidBack");
         web.setWebViewClient(new WebViewClient());
         web.setWebChromeClient(new WebChromeClient());
         root.addView(web, new FrameLayout.LayoutParams(-1,-1));
@@ -56,7 +62,7 @@ public class MainActivity extends Activity {
         web.loadUrl("file:///android_asset/index.html");
     }
     @Override public void onBackPressed() {
-        if (web != null) web.evaluateJavascript("if(document.body.dataset.page !== 'home'){showPage('home');}else{AndroidBackFallback();}", null);
+        if (web != null) web.evaluateJavascript("if(document.body.dataset.page !== 'home'){showPage('home');}else{AndroidBack.exit();}", null);
         else super.onBackPressed();
     }
 }
