@@ -38,7 +38,7 @@ jobs:
           if not match:
               raise SystemExit("App JavaScript block not found")
           Path("/tmp/app.js").write_text(match.group(1), encoding="utf-8")
-          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "const KEY='mygarage_service_book_v3'"]
+          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "const KEY='mygarage_service_book_v3'"]
           missing = [item for item in required if item not in html]
           if missing:
               raise SystemExit("Missing app features: " + ", ".join(missing))
