@@ -46,6 +46,7 @@ jobs:
               raise SystemExit("Offline app must not request internet permission")
           PY
           node --check /tmp/app.js
+          node tests/smoke.js
       - name: Set up Gradle with cache
         uses: gradle/actions/setup-gradle@v6
         with:
