@@ -59,6 +59,17 @@ const coil = app.state.services.find(s => s.name === 'کوئل');
 coil.records = [{ id: 'c', km: 650000, date: '1405/08/15', kind: 'تعمیر', affectsDue: true, createdAt: '2026-11-06T12:00:00.000Z' }];
 assert.equal(app.status(coil), 'manual', 'items without a fixed interval must not be falsely marked up-to-date');
 
+const brake = app.state.services.find(s => s.name === 'لنت دیسکی جلو');
+assert.equal(brake.intervalMode, 'inspection', 'wear-based brake pads must use inspection intervals');
+brake.records = [{ id: 'd', km: 10000, date: '1405/08/15', kind: 'بررسی', affectsDue: true, createdAt: '2026-11-06T13:00:00.000Z' }];
+app.state.km = 19000;
+assert.equal(app.status(brake), 'red', 'inspection event must restart an inspection interval');
+
+const oil = app.state.services.find(s => s.name === 'روغن موتور');
+assert.equal(oil.intervalMode, 'replacement', 'engine oil must use replacement intervals');
+oil.records = [{ id: 'e', km: 10000, date: '1405/08/15', kind: 'بررسی', affectsDue: false, createdAt: '2026-11-06T14:00:00.000Z' }];
+assert.equal(app.status(oil), 'manual', 'inspection must not reset an oil replacement interval');
+
 assert.ok(app.save(), 'local data must save');
 assert.ok(data.has('mygarage_service_book_v3'), 'versioned local storage key must be used');
 
