@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, 'inline application script must exist');
 
 function boot(seedStore = {}) {
@@ -30,7 +30,7 @@ function boot(seedStore = {}) {
     setItem(k, v) { data.set(k, String(v)); }
   };
   const factory = new Function('document', 'localStorage', match[1] +
-    '\\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo};');
+    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo};');
   return { app: factory(document, localStorage), values, data };
 }
 
