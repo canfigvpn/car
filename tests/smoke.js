@@ -67,6 +67,7 @@ assert.equal(app.status(brake), 'red', 'inspection event must restart an inspect
 
 const oil = app.state.services.find(s => s.name === 'روغن موتور');
 assert.equal(oil.intervalMode, 'replacement', 'engine oil must use replacement intervals');
+app.state.km = 10000;
 oil.records = [{ id: 'e', km: 10000, date: '1405/08/15', kind: 'بررسی', affectsDue: false, createdAt: '2026-11-06T14:00:00.000Z' }];
 assert.equal(app.status(oil), 'manual', 'inspection must not reset an oil replacement interval');
 
