@@ -41,6 +41,14 @@ assert.equal(app.parseJ('1400/12/30'), null, 'invalid non-leap Esfand 30 must be
 assert.equal(app.parseJ('1405/07/31'), null, 'Mehr must not accept day 31');
 assert.ok(app.parseJ('۱۴۰۵/۰۸/۱۵'), 'Persian digits must be accepted');
 assert.equal(app.normalizeDate('1405-08-15'), '1405/08/15');
+assert.equal(app.safeNumber('60.000'), 60000, 'grouped odometer values must parse as integers');
+const grouped = { value: '60000' }; app.formatGrouped(grouped);
+assert.equal(grouped.value, '60.000', 'odometer input must insert dot group separators');
+assert.ok(app.guideFor('ترموستات','').includes('بررسی دوره‌ای:'), 'each service guide must include an inspection interval');
+assert.ok(app.guideFor('ترموستات','').includes('تعویض:'), 'each service guide must include replacement guidance');
+assert.ok(html.includes('تعمیر و تعویض و بررسی'), 'the mechanic operation must be a single combined type');
+assert.ok(html.includes('showJalaliCalendar'), 'the Jalali calendar control must exist');
+assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
 assert.equal(app.addJalaliDays('1405/08/15', 365), '1406/8/15');
 
 const belt = app.state.services.find(s => s.name === 'تسمه دینام');
@@ -57,7 +65,7 @@ assert.equal(app.status(belt), 'black', 'inspection must not reset replacement i
 
 const coil = app.state.services.find(s => s.name === 'کوئل');
 coil.records = [{ id: 'c', km: 650000, date: '1405/08/15', kind: 'تعمیر', affectsDue: true, createdAt: '2026-11-06T12:00:00.000Z' }];
-assert.equal(app.status(coil), 'manual', 'items without a fixed interval must not be falsely marked up-to-date');
+assert.equal(app.status(coil), 'soft', 'items without a fixed interval must not show a colored review warning');
 
 const brake = app.state.services.find(s => s.name === 'لنت دیسکی جلو');
 assert.equal(brake.intervalMode, 'inspection', 'wear-based brake pads must use inspection intervals');
@@ -69,7 +77,7 @@ const oil = app.state.services.find(s => s.name === 'روغن موتور');
 assert.equal(oil.intervalMode, 'replacement', 'engine oil must use replacement intervals');
 app.state.km = 10000;
 oil.records = [{ id: 'e', km: 10000, date: '1405/08/15', kind: 'بررسی', affectsDue: false, createdAt: '2026-11-06T14:00:00.000Z' }];
-assert.equal(app.status(oil), 'manual', 'inspection must not reset an oil replacement interval');
+assert.equal(app.status(oil), 'soft', 'a non-due service must not show a colored review warning when no replacement record exists');
 
 assert.ok(app.save(), 'local data must save');
 assert.ok(data.has('mygarage_service_book_v3'), 'versioned local storage key must be used');
