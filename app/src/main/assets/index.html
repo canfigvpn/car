@@ -71,7 +71,7 @@ const SEED=[
 
 const KEY='mygarage_service_book_v3';
 const LEGACY_KEY='mygarage_service_book_v1';
-let state=loadState(),historyMode='all',historyQuery='';
+let historyMode='all',historyQuery='';
 function digitsOnly(v){return String(v==null?'':v).replace(/[۰-۹]/g,c=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(c)).replace(/[^0-9]/g,'')}
 let calendarTarget='';let calendarMonthShift=0;
 function showJalaliCalendar(id){calendarTarget=id;calendarMonthShift=0;renderJalaliCalendar()}
@@ -125,6 +125,7 @@ const GUIDE={
 'بازبینی کیلومتر خودرو':['هر ماه یا حدود هر ۱۰۰۰ کیلومتر کیلومترشمار و ثبت دفترچه با سوابق تطبیق داده شود.','تعویض ندارد؛ در صورت خرابی کیلومترشمار، سنسور یا نمایشگر تعمیر شود.','اختلاف کیلومتر یا قطع‌شدن نمایشگر را ثبت و بررسی کن.']
 };
 function guideFor(name,old){let g=GUIDE[name];if(!g)g=['هر ۱۰ هزار کیلومتر یا ۶ ماه در سرویس دوره‌ای بررسی شود.','تعویض دوره‌ای مشخص ندارد؛ فقط بر اساس تست و تشخیص مکانیک و مشخصات سازنده اقدام شود.','در صورت صدای غیرعادی، نشتی، چراغ هشدار یا تغییر عملکرد، زودتر بررسی کن.'];let text='بررسی دوره‌ای: '+g[0]+'\nتعویض: '+g[1]+'\nعلائم هشدار: '+g[2];return old&& !old.includes('بررسی دوره‌ای:')?text+'\n\nیادداشت قبلی: '+old:old||text}
+let state=loadState();
 function safeNumber(v,min=0,max=999999999){if(v===''||v===null||v===undefined)return null;let raw=digitsOnly(v);if(!raw)return null;let n=Number(raw);return Number.isSafeInteger(n)&&n>=min&&n<=max?n:null}function formatGrouped(el){let raw=digitsOnly(el.value),formatted=raw?Number(raw).toLocaleString('en-US').replace(/,/g,'.'):'';el.value=formatted}
 function normalizeRecord(x){if(!x||typeof x!=='object')return null;let km=safeNumber(x.km);let date=normalizeDate(x.date);if(km===null||!date)return null;return{id:String(x.id||uid()),km,date,cost:String(x.cost||''),note:String(x.note||''),kind:String(x.kind||'تعمیر و تعویض و بررسی'),affectsDue:x.affectsDue!==false,createdAt:String(x.createdAt||new Date().toISOString())}}
 function normalizeService(s,i){if(!s||typeof s!=='object')return null;let records=Array.isArray(s.records)?s.records.map(normalizeRecord).filter(Boolean):[];if(!records.length&&(s.lastKm!==null&&s.lastKm!==undefined||s.lastDate)){let date=normalizeDate(s.lastDate)||todayJ().join('/'),km=safeNumber(s.lastKm);if(km===null)km=0;records.push({id:uid(),km,date,cost:String(s.cost||''),note:String(s.note||''),kind:'ثبت قدیمی',createdAt:new Date().toISOString()})}return{id:Number.isSafeInteger(Number(s.id))?Number(s.id):i+1,cat:String(s.cat||'سایر'),name:String(s.name||'سرویس'),ikm:safeNumber(s.ikm)||0,days:safeNumber(s.days)||0,rule:guideFor(String(s.name||'سرویس'),String(s.rule||'')),intervalMode:s.intervalMode==='inspection'?'inspection':s.intervalMode==='replacement'?'replacement':(/بررسی|بازبینی/.test(String(s.rule||''))&&!['تسمه دینام','روغن گیربکس'].includes(String(s.name))?'inspection':'replacement'),records:records,enabled:s.enabled!==false}}
