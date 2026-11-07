@@ -30,7 +30,7 @@ function boot(seedStore = {}) {
     setItem(k, v) { data.set(k, String(v)); }
   };
   const factory = new Function('document', 'localStorage', match[1] +
-    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,safeNumber,formatGrouped,guideFor};');
+    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate};');
   return { app: factory(document, localStorage), values, data };
 }
 
@@ -47,6 +47,7 @@ assert.equal(grouped.value, '60.000', 'odometer input must insert dot group sepa
 assert.ok(app.guideFor('ترموستات','').includes('بررسی دوره‌ای:'), 'each service guide must include an inspection interval');
 assert.ok(app.guideFor('ترموستات','').includes('تعویض:'), 'each service guide must include replacement guidance');
 assert.ok(html.includes('تعمیر و تعویض و بررسی'), 'the mechanic operation must be a single combined type');
+assert.ok(!html.includes('<label>نوع بازه</label>'), 'manual interval-type selector must be removed');
 assert.ok(html.includes('showJalaliCalendar'), 'the Jalali calendar control must exist');
 app.showJalaliCalendar('rDate');
 assert.ok(values.rDateCalendar.innerHTML.includes('cal-grid'), 'Jalali calendar must render a selectable month grid');
