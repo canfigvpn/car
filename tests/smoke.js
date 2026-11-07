@@ -48,6 +48,10 @@ assert.ok(app.guideFor('ترموستات','').includes('بررسی دوره‌ا
 assert.ok(app.guideFor('ترموستات','').includes('تعویض:'), 'each service guide must include replacement guidance');
 assert.ok(html.includes('تعمیر و تعویض و بررسی'), 'the mechanic operation must be a single combined type');
 assert.ok(html.includes('showJalaliCalendar'), 'the Jalali calendar control must exist');
+app.showJalaliCalendar('rDate');
+assert.ok(values.rDateCalendar.innerHTML.includes('cal-grid'), 'Jalali calendar must render a selectable month grid');
+app.chooseJalaliDate(1405, 8, 22);
+assert.equal(values.rDate.value, '1405/08/22', 'selecting a Jalali day must fill the date field');
 assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
 assert.equal(app.addJalaliDays('1405/08/15', 365), '1406/8/15');
 
