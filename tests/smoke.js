@@ -30,7 +30,7 @@ function boot(seedStore = {}) {
     setItem(k, v) { data.set(k, String(v)); }
   };
   const factory = new Function('document', 'localStorage', match[1] +
-    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo};');
+    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,safeNumber,formatGrouped,guideFor};');
   return { app: factory(document, localStorage), values, data };
 }
 
