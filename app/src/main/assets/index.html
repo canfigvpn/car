@@ -299,6 +299,13 @@ init();
    const el=e.target;
    if(el&&/^(INPUT|TEXTAREA)$/.test(el.tagName))el.value=ascii(el.value);
  },true);
+ const normalizeText=root=>{
+   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+   let node;while((node=walker.nextNode())){if(node.parentElement&&/^(SCRIPT|STYLE)$/.test(node.parentElement.tagName))continue;const next=ascii(node.nodeValue);if(next!==node.nodeValue)node.nodeValue=next;}
+   if(root.querySelectorAll)root.querySelectorAll('input,textarea,[placeholder],[title],[aria-label]').forEach(el=>{['placeholder','title','aria-label'].forEach(k=>{if(el.hasAttribute(k)){const v=el.getAttribute(k),n=ascii(v);if(v!==n)el.setAttribute(k,n)}});if(/^(INPUT|TEXTAREA)$/.test(el.tagName)&&el.value){const n=ascii(el.value);if(el.value!==n)el.value=n}});
+ };
+ normalizeText(document.body);
+ if(window.MutationObserver){const observer=new MutationObserver(records=>records.forEach(r=>{if(r.type==='characterData'){const n=ascii(r.target.nodeValue);if(n!==r.target.nodeValue)r.target.nodeValue=n}else r.addedNodes.forEach(n=>{if(n.nodeType===Node.TEXT_NODE){const v=ascii(n.nodeValue);if(v!==n.nodeValue)n.nodeValue=v}else if(n.nodeType===Node.ELEMENT_NODE)normalizeText(n)})}));observer.observe(document.body,{subtree:true,childList:true,characterData:true});}
 })();
 function log(action,service,detail,type){
  state.logs.unshift({id:uid(),date:fmtJ(new Date()),time:new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false}),createdAt:new Date().toISOString(),action,service,detail,type:type||'service'});
