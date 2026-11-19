@@ -2,8 +2,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
-const scriptBlocks = [...html.matchAll(/<script(?: id="([^"]+)")?>([\\s\\S]*?)<\\/script>/g)];
-const appScript = scriptBlocks.filter(x => x[1] !== 'mygarage-number-polish').map(x => x[2]).join('\\n');
+const scriptBlocks = [...html.matchAll(/<script(?: id="([^"]+)")?>([\s\S]*?)<\/script>/g)];
+const appScript = scriptBlocks.filter(x => x[1] !== 'mygarage-number-polish').map(x => x[2]).join('\n');
 assert.ok(appScript, 'inline application scripts must exist');
 
 
@@ -32,7 +32,7 @@ function boot(seedStore = {}) {
     setItem(k, v) { data.set(k, String(v)); }
   };
   const factory = new Function('document', 'localStorage', 'window', appScript +
-    '\\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,dueCardHTML,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate,closeJalaliCalendar};');
+    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,dueCardHTML,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate,closeJalaliCalendar};');
   return { app: factory(document, localStorage, {AndroidFiles:null}), values, data };
 }
 
