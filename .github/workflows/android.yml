@@ -64,7 +64,7 @@ jobs:
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
           "$SDKMANAGER" --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - name: Prepare stable release signing key
-        if: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 != '' }}
+        if: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 != '' && secrets.MYGARAGE_KEYSTORE_PASSWORD != '' && secrets.MYGARAGE_KEY_ALIAS != '' && secrets.MYGARAGE_KEY_PASSWORD != '' }}
         env:
           MYGARAGE_KEYSTORE_BASE64: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 }}
           MYGARAGE_KEYSTORE_PASSWORD: ${{ secrets.MYGARAGE_KEYSTORE_PASSWORD }}
