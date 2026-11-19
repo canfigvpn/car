@@ -14,6 +14,10 @@ jobs:
     env:
       ANDROID_HOME: /usr/local/lib/android/sdk
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      MYGARAGE_KEYSTORE_BASE64: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 }}
+      MYGARAGE_KEYSTORE_PASSWORD: ${{ secrets.MYGARAGE_KEYSTORE_PASSWORD }}
+      MYGARAGE_KEY_ALIAS: ${{ secrets.MYGARAGE_KEY_ALIAS }}
+      MYGARAGE_KEY_PASSWORD: ${{ secrets.MYGARAGE_KEY_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -64,12 +68,7 @@ jobs:
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
           "$SDKMANAGER" --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - name: Prepare stable release signing key
-        if: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 != '' && secrets.MYGARAGE_KEYSTORE_PASSWORD != '' && secrets.MYGARAGE_KEY_ALIAS != '' && secrets.MYGARAGE_KEY_PASSWORD != '' }}
-        env:
-          MYGARAGE_KEYSTORE_BASE64: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 }}
-          MYGARAGE_KEYSTORE_PASSWORD: ${{ secrets.MYGARAGE_KEYSTORE_PASSWORD }}
-          MYGARAGE_KEY_ALIAS: ${{ secrets.MYGARAGE_KEY_ALIAS }}
-          MYGARAGE_KEY_PASSWORD: ${{ secrets.MYGARAGE_KEY_PASSWORD }}
+        if: ${{ env.MYGARAGE_KEYSTORE_BASE64 != '' && env.MYGARAGE_KEYSTORE_PASSWORD != '' && env.MYGARAGE_KEY_ALIAS != '' && env.MYGARAGE_KEY_PASSWORD != '' }}
         shell: bash
         run: |
           set -euo pipefail
