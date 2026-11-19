@@ -14,9 +14,25 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+    signingConfigs {
+        release {
+            def keyStorePath = System.getenv("MYGARAGE_KEYSTORE_PATH")
+            if (keyStorePath) {
+                storeFile file(keyStorePath)
+                storePassword System.getenv("MYGARAGE_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("MYGARAGE_KEY_ALIAS")
+                keyPassword System.getenv("MYGARAGE_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         debug { debuggable true }
-        release { minifyEnabled false }
+        release {
+            minifyEnabled false
+            if (System.getenv("MYGARAGE_KEYSTORE_PATH")) {
+                signingConfig signingConfigs.release
+            }
+        }
     }
 }
 dependencies {
