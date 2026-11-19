@@ -14,6 +14,10 @@ jobs:
     env:
       ANDROID_HOME: /usr/local/lib/android/sdk
       ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+      MYGARAGE_KEYSTORE_BASE64: ${{ secrets.MYGARAGE_KEYSTORE_BASE64 }}
+      MYGARAGE_KEYSTORE_PASSWORD: ${{ secrets.MYGARAGE_KEYSTORE_PASSWORD }}
+      MYGARAGE_KEY_ALIAS: ${{ secrets.MYGARAGE_KEY_ALIAS }}
+      MYGARAGE_KEY_PASSWORD: ${{ secrets.MYGARAGE_KEY_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -34,11 +38,12 @@ jobs:
           from pathlib import Path
           import re
           html = Path("app/src/main/assets/index.html").read_text(encoding="utf-8")
-          match = re.search(r"<script>([\s\S]*?)</script>", html)
-          if not match:
-              raise SystemExit("App JavaScript block not found")
-          Path("/tmp/app.js").write_text(match.group(1), encoding="utf-8")
-          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "function showJalaliCalendar", "function guideFor", "تعمیر و تعویض و بررسی", "const KEY='mygarage_service_book_v3'"]
+          matches = re.findall(r'<script(?: id="([^"]+)")?>([\s\S]*?)</script>', html)
+          scripts = [source for script_id, source in matches if script_id != "mygarage-number-polish"]
+          if not scripts:
+              raise SystemExit("App JavaScript blocks not found")
+          Path("/tmp/app.js").write_text("\n".join(scripts), encoding="utf-8")
+          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "function showJalaliCalendar", "function closeJalaliCalendar", "function dueCardHTML", "function toggleDrawer", "function driveSync", "function driveRestore", "function setWritingMode", "تنظیمات سرویس", "تعمیر و تعویض و بررسی", "const KEY='mygarage_service_book_v3'"]
           missing = [item for item in required if item not in html]
           if missing:
               raise SystemExit("Missing app features: " + ", ".join(missing))
@@ -62,13 +67,35 @@ jobs:
           fi
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null || true
           "$SDKMANAGER" --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-      - name: Build installable debug APK
-        run: gradle --no-daemon clean :app:assembleDebug
+      - name: Prepare stable release signing key
+        if: ${{ env.MYGARAGE_KEYSTORE_BASE64 != '' && env.MYGARAGE_KEYSTORE_PASSWORD != '' && env.MYGARAGE_KEY_ALIAS != '' && env.MYGARAGE_KEY_PASSWORD != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "$MYGARAGE_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/mygarage-release.jks"
+          {
+            echo "MYGARAGE_KEYSTORE_PATH=$RUNNER_TEMP/mygarage-release.jks"
+            echo "MYGARAGE_KEYSTORE_PASSWORD=$MYGARAGE_KEYSTORE_PASSWORD"
+            echo "MYGARAGE_KEY_ALIAS=$MYGARAGE_KEY_ALIAS"
+            echo "MYGARAGE_KEY_PASSWORD=$MYGARAGE_KEY_PASSWORD"
+          } >> "$GITHUB_ENV"
+      - name: Build installable APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${MYGARAGE_KEYSTORE_PATH:-}" ]; then
+            gradle --no-daemon clean :app:assembleRelease
+            echo "APK_PATH=app/build/outputs/apk/release/app-release.apk" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Stable signing secrets are not configured. This debug APK may not update an existing installation signed with another key."
+            gradle --no-daemon clean :app:assembleDebug
+            echo "APK_PATH=app/build/outputs/apk/debug/app-debug.apk" >> "$GITHUB_ENV"
+          fi
       - name: Verify APK package, signature and size
         shell: bash
         run: |
           set -euo pipefail
-          APK="app/build/outputs/apk/debug/app-debug.apk"
+          APK="$APK_PATH"
           test -s "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/apk-badging.txt
           grep -q "package: name='ir.ef3.mygarage'" /tmp/apk-badging.txt
@@ -82,8 +109,8 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyGarage-v3.1.0-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: MyGarage-v3.2.0-APK
+          path: ${{ env.APK_PATH }}
           if-no-files-found: error
           retention-days: 14
           compression-level: 0

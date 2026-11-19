@@ -2,8 +2,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
-const match = html.match(/<script>([\s\S]*?)<\/script>/);
-assert.ok(match, 'inline application script must exist');
+const scriptBlocks = [...html.matchAll(/<script(?: id="([^"]+)")?>([\s\S]*?)<\/script>/g)];
+const appScript = scriptBlocks.filter(x => x[1] !== 'mygarage-number-polish').map(x => x[2]).join('\n');
+assert.ok(appScript, 'inline application scripts must exist');
+
 
 function boot(seedStore = {}) {
   const values = {
@@ -29,9 +31,9 @@ function boot(seedStore = {}) {
     getItem(k) { return data.has(k) ? data.get(k) : null; },
     setItem(k, v) { data.set(k, String(v)); }
   };
-  const factory = new Function('document', 'localStorage', match[1] +
-    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate};');
-  return { app: factory(document, localStorage), values, data };
+  const factory = new Function('document', 'localStorage', 'window', appScript +
+    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,dueCardHTML,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate,closeJalaliCalendar};');
+  return { app: factory(document, localStorage, {AndroidFiles:null}), values, data };
 }
 
 const { app, values, data } = boot();
@@ -51,13 +53,25 @@ assert.ok(!html.includes('<label>نوع بازه</label>'), 'manual interval-typ
 assert.ok(html.includes('showJalaliCalendar'), 'the Jalali calendar control must exist');
 app.showJalaliCalendar('rDate');
 assert.ok(values.rDateCalendar.innerHTML.includes('cal-grid'), 'Jalali calendar must render a selectable month grid');
+assert.ok(values.rDateCalendar.innerHTML.includes('calendar-close'), 'calendar must include a close button');
 app.chooseJalaliDate(1405, 8, 22);
 assert.equal(values.rDate.value, '1405/08/22', 'selecting a Jalali day must fill the date field');
 assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
+assert.ok(html.includes('Google Drive') && html.includes('driveSync'), 'Drive controls must exist');
+assert.ok(html.includes('تنظیمات سرویس'), 'service settings label must exist');
+assert.ok(html.includes('setWritingMode') && html.includes('Left'), 'writing modes must exist');
 assert.equal(app.addJalaliDays('1405/08/15', 365), '1406/8/15');
 
 const belt = app.state.services.find(s => s.name === 'تسمه دینام');
 belt.records = [{ id: 'a', km: 600000, date: '1405/08/15', cost: '', note: '', kind: 'تعویض', affectsDue: true, createdAt: '2026-11-06T10:00:00.000Z' }];
+const cardSample={id:99,cat:'Test',name:'Demo',ikm:50000,days:365,records:[{id:'z',km:603000,date:'1405/08/06',cost:'',note:'',kind:'تعویض',affectsDue:true,createdAt:'2026-11-06T10:00:00.000Z'}]};
+app.state.km=603000;
+const cardHtml=app.dueCardHTML(cardSample);
+assert.ok(cardHtml.includes('موعد کیلومتری') && cardHtml.includes('موعد زمانی') && cardHtml.includes('آخرین ثبت'), 'service cards must show separate due rows');
+const cardWithInspection={...cardSample,records:[...cardSample.records,{id:'inspect',km:650000,date:'1405/08/07',cost:'',note:'بازدید',kind:'بررسی',affectsDue:false,createdAt:'2026-11-07T10:00:00.000Z'}]};
+const inspectionCard=app.dueCardHTML(cardWithInspection);
+assert.ok(inspectionCard.includes('653.000'), 'inspection-only records must not reset the replacement due mileage');
+assert.ok(inspectionCard.includes('650.000'), 'last registered inspection must still appear in the last-record row');
 app.state.km = 644999;
 assert.equal(app.status(belt), 'green', 'more than 10 percent remaining should be green');
 app.state.km = 645000;
