@@ -68,6 +68,10 @@ const cardSample={id:99,cat:'Test',name:'Demo',ikm:50000,days:365,records:[{id:'
 app.state.km=603000;
 const cardHtml=app.dueCardHTML(cardSample);
 assert.ok(cardHtml.includes('موعد کیلومتری') && cardHtml.includes('موعد زمانی') && cardHtml.includes('آخرین ثبت'), 'service cards must show separate due rows');
+const cardWithInspection={...cardSample,records:[...cardSample.records,{id:'inspect',km:650000,date:'1405/08/07',cost:'',note:'بازدید',kind:'بررسی',affectsDue:false,createdAt:'2026-11-07T10:00:00.000Z'}]};
+const inspectionCard=app.dueCardHTML(cardWithInspection);
+assert.ok(inspectionCard.includes('653.000'), 'inspection-only records must not reset the replacement due mileage');
+assert.ok(inspectionCard.includes('650.000'), 'last registered inspection must still appear in the last-record row');
 app.state.km = 644999;
 assert.equal(app.status(belt), 'green', 'more than 10 percent remaining should be green');
 app.state.km = 645000;
