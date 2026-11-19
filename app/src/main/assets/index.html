@@ -322,7 +322,7 @@ function driveRestore(){if(window.AndroidFiles&&AndroidFiles.restoreDrive)Androi
 function onDriveStatus(ok,name,last){let e=document.getElementById('driveStatus');if(e){e.textContent=ok?'متصل · '+(name||'فایل پشتیبان'):'هنوز فایل پشتیبان انتخاب نشده است.';e.className='drive-status'+(ok?' connected':'')}document.getElementById('driveLastSync').textContent='آخرین بروزرسانی: '+(last||'ثبت نشده')}
 function onDriveConnected(ok,name,message){onDriveStatus(ok,name,'');toast(ok?'فایل پشتیبان انتخاب شد.':(message||'اتصال ناموفق بود.'))}
 function onDriveSyncResult(ok,last,message){let e=document.getElementById('driveStatus');e.textContent=ok?'بروزرسانی موفق بود.':'بروزرسانی ناموفق بود · '+(message||'');e.className='drive-status'+(ok?' connected':' error');document.getElementById('driveLastSync').textContent='آخرین بروزرسانی: '+(last||'ثبت نشده');toast(ok?'پشتیبان Google Drive بروزرسانی شد.':'بروزرسانی Google Drive ناموفق بود.')}
-function onDriveRestoreResult(ok,message){toast(ok?'بازیابی از Google Drive انجام شد.':(message||'بازیابی ناموفق بود.'))}
+function onDriveRestoreResult(ok,message){if(ok){let e=document.getElementById('driveStatus');if(e)e.textContent='فایل پشتیبان خوانده شد؛ تأیید بازیابی را در پیام بعدی انجام بده.'}else toast(message||'بازیابی ناموفق بود.')}
 function initRedesign(){renderServices();updateThemeLabel();if(window.AndroidFiles&&AndroidFiles.getDriveStatus)AndroidFiles.getDriveStatus()}initRedesign();
 </script><script id="mygarage-number-polish">
 /* Keep every visible numeric value in ASCII digits. */
