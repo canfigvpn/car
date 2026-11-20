@@ -32,7 +32,7 @@ function boot(seedStore = {}) {
     setItem(k, v) { data.set(k, String(v)); }
   };
   const factory = new Function('document', 'localStorage', 'window', appScript +
-    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,dueCardHTML,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate,closeJalaliCalendar};');
+    '\nreturn {state,status,parseJ,addJalaliDays,normalizeDate,save,latest,dueInfo,dueInfoHtml,renderServices,autoTextDirection,safeNumber,formatGrouped,guideFor,showJalaliCalendar,chooseJalaliDate,closeJalaliCalendar};');
   return { app: factory(document, localStorage, {AndroidFiles:null}), values, data };
 }
 
@@ -59,19 +59,22 @@ assert.equal(values.rDate.value, '1405/08/22', 'selecting a Jalali day must fill
 assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
 assert.ok(html.includes('Google Drive') && html.includes('driveSync'), 'Drive controls must exist');
 assert.ok(html.includes('تنظیمات سرویس'), 'service settings label must exist');
-assert.ok(html.includes('setWritingMode') && html.includes('Left'), 'writing modes must exist');
+assert.ok(html.includes('function autoTextDirection') && !html.includes('setWritingMode'), 'writing direction must be automatic');
+const faText={value:'متن فارسی',style:{},setAttribute(k,v){this[k]=v}};app.autoTextDirection(faText);assert.equal(faText.dir,'rtl');
+const enText={value:'English text',style:{},setAttribute(k,v){this[k]=v}};app.autoTextDirection(enText);assert.equal(enText.dir,'ltr');
 assert.equal(app.addJalaliDays('1405/08/15', 365), '1406/8/15');
 
 const belt = app.state.services.find(s => s.name === 'تسمه دینام');
 belt.records = [{ id: 'a', km: 600000, date: '1405/08/15', cost: '', note: '', kind: 'تعویض', affectsDue: true, createdAt: '2026-11-06T10:00:00.000Z' }];
 const cardSample={id:99,cat:'Test',name:'Demo',ikm:50000,days:365,records:[{id:'z',km:603000,date:'1405/08/06',cost:'',note:'',kind:'تعویض',affectsDue:true,createdAt:'2026-11-06T10:00:00.000Z'}]};
 app.state.km=603000;
-const cardHtml=app.dueCardHTML(cardSample);
-assert.ok(cardHtml.includes('موعد کیلومتری') && cardHtml.includes('موعد زمانی') && cardHtml.includes('آخرین ثبت'), 'service cards must show separate due rows');
-const cardWithInspection={...cardSample,records:[...cardSample.records,{id:'inspect',km:650000,date:'1405/08/07',cost:'',note:'بازدید',kind:'بررسی',affectsDue:false,createdAt:'2026-11-07T10:00:00.000Z'}]};
-const inspectionCard=app.dueCardHTML(cardWithInspection);
+const cardHtml=app.dueInfoHtml(cardSample);
+assert.ok(cardHtml.includes('موعد کیلومتری') && cardHtml.includes('موعد زمانی') && cardHtml.includes('class="num"'), 'service cards must show separately highlighted due values');
+const cardWithInspection={...cardSample,enabled:true,records:[...cardSample.records,{id:'inspect',km:650000,date:'1405/08/07',cost:'',note:'بازدید',kind:'بررسی',affectsDue:false,createdAt:'2026-11-07T10:00:00.000Z'}]};
+const inspectionCard=app.dueInfoHtml(cardWithInspection);
 assert.ok(inspectionCard.includes('653.000'), 'inspection-only records must not reset the replacement due mileage');
-assert.ok(inspectionCard.includes('650.000'), 'last registered inspection must still appear in the last-record row');
+app.state.services.push(cardWithInspection);app.state.km=603000;app.renderServices();
+assert.ok(values.serviceList.innerHTML.includes('650.000'), 'latest inspection must remain visible as the last registered record');
 app.state.km = 644999;
 assert.equal(app.status(belt), 'green', 'more than 10 percent remaining should be green');
 app.state.km = 645000;
