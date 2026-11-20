@@ -122,3 +122,13 @@ assert.equal(migrated.state.services[0].records.length, 1, 'legacy last-service 
 assert.equal(migrated.state.services[0].records[0].km, 600000);
 
 console.log('MyGarage smoke tests passed.');
+
+assert.ok(!html.includes('با تغییر کیلومتر، وضعیت و اولویت تمام سرویس‌ها خودکار به‌روزرسانی می‌شود.'), 'odometer helper hint must be removed');
+assert.ok(!html.includes('مدیریت هوشمند نگهداری خودرو'), 'management subtitle must be removed');
+assert.ok(html.includes('aria-label="راهنمای وضعیت سرویس‌ها"') && html.includes('flex-wrap:nowrap!important'), 'all status labels must stay in one horizontal row');
+assert.ok(html.includes('status-heading status-') && html.includes('legend-item status-green'), 'status headings and legend labels must use matching clear colors');
+assert.ok(html.includes('service-history-label') && html.includes('سوابق \'+esc(s.name)+\' · \'+s.records.length+\' سابقه'), 'service cards must show service-specific history instead of category');
+assert.ok(html.includes("modal('سوابق '+esc(s.name)+' · '+s.records.length+' سابقه'"), 'history modal title must include service name and record count');
+assert.ok(html.includes('<span>کیلومتر فعلی</span><span>KM</span>'), 'main odometer title must use the shorter label');
+assert.ok(!html.includes('>کیلومتر فعلی خودرو</button>') && html.includes('>کیلومتر فعلی</button>'), 'record action button must use the shorter label');
+assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('class="nav-item nav-menu"') && html.includes('mygarage-v35-floating-navbar'), 'floating notch navbar with integrated hamburger must exist');
