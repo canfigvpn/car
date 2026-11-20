@@ -43,7 +43,7 @@ jobs:
           if not scripts:
               raise SystemExit("App JavaScript blocks not found")
           Path("/tmp/app.js").write_text("\n".join(scripts), encoding="utf-8")
-          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "function showJalaliCalendar", "function closeJalaliCalendar", "function dueCardHTML", "function toggleDrawer", "function driveSync", "function driveRestore", "function setWritingMode", "تنظیمات سرویس", "تعمیر و تعویض و بررسی", "const KEY='mygarage_service_book_v3'"]
+          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "function showJalaliCalendar", "function closeJalaliCalendar", "function dueInfoHtml", "function toggleDrawer", "function driveSync", "function driveRestore", "function autoTextDirection", "تنظیمات سرویس", "search-clear", "floating-menu", "#DBE2FF", "تعمیر و تعویض و بررسی", "const KEY='mygarage_service_book_v3'"]
           missing = [item for item in required if item not in html]
           if missing:
               raise SystemExit("Missing app features: " + ", ".join(missing))
