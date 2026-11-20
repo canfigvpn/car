@@ -132,3 +132,5 @@ assert.ok(html.includes("modal('سوابق '+esc(s.name)+' · '+s.records.length
 assert.ok(html.includes('<span>کیلومتر فعلی</span><span>KM</span>'), 'main odometer title must use the shorter label');
 assert.ok(!html.includes('>کیلومتر فعلی خودرو</button>') && html.includes('>کیلومتر فعلی</button>'), 'record action button must use the shorter label');
 assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('class="nav-item nav-menu"') && html.includes('mygarage-v35-floating-navbar'), 'floating notch navbar with integrated hamburger must exist');
+
+assert.ok(html.includes("document.getElementById('homeTab').classList.toggle('active'") && html.includes("document.getElementById('historyTab').classList.toggle('active'"), 'bottom navigation active state must follow the selected page');
