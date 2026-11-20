@@ -109,7 +109,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyGarage-v3.2.0-APK
+          name: MyGarage-v3.3.0-APK
           path: ${{ env.APK_PATH }}
           if-no-files-found: error
           retention-days: 14
