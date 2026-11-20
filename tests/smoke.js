@@ -134,4 +134,4 @@ assert.ok(!html.includes('>کیلومتر فعلی خودرو</button>') && html
 assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('mygarage-v36-floating-navbar') && (html.match(/class="nav-item/g)||[]).length===6, 'six-item floating notch navbar must exist');
 assert.ok(html.includes('id="supportPage"') && html.includes('id="aboutPage"') && !html.includes('drawerOverlay'), 'support/about pages must replace the hamburger drawer');
 
-assert.ok(html.includes('function showPage(p)') && html.includes("name+'Tab'") && html.includes('function toggleTheme()'), 'six navigation items must switch pages and theme');
+assert.ok(html.includes('function showPage(p)') && html.includes("n+'Tab'") && html.includes('function toggleTheme()'), 'six navigation items must switch pages and theme');
