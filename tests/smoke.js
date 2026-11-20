@@ -59,6 +59,13 @@ assert.equal(values.rDate.value, '1405/08/22', 'selecting a Jalali day must fill
 assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
 assert.ok(html.includes('Google Drive') && html.includes('driveSync'), 'Drive controls must exist');
 assert.ok(html.includes('تنظیمات سرویس'), 'service settings label must exist');
+assert.ok(html.includes('home-toolbar') && html.includes('toolbar-menu'), 'home toolbar must place the menu at upper-left beside search');
+assert.equal((html.match(/id="search"/g)||[]).length,1,'home search must exist exactly once');
+assert.ok(html.includes('add-service-button') && html.includes('function addService()'), 'custom service creation must be available');
+assert.ok(!html.includes('id="sortFilter"') && !html.includes("getElementById('sortFilter')"), 'sort control must be replaced by add-service action');
+assert.ok(html.includes('#E2E2EE') && html.includes('color:#16834a!important'), 'light theme must use the requested gray and green numeric values');
+assert.ok(html.includes('.modal-actions{position:static!important') && html.includes('margin-top:10px!important'), 'modal actions must stay close to the form');
+
 assert.ok(html.includes('function autoTextDirection') && !html.includes('setWritingMode'), 'writing direction must be automatic');
 const faText={value:'متن فارسی',style:{},setAttribute(k,v){this[k]=v}};app.autoTextDirection(faText);assert.equal(faText.dir,'rtl');
 const enText={value:'English text',style:{},setAttribute(k,v){this[k]=v}};app.autoTextDirection(enText);assert.equal(enText.dir,'ltr');
