@@ -293,6 +293,55 @@ body[data-theme="light"] .bottom:before{background:#fff}body[data-theme="light"]
 .support-card{margin:12px 0;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:0 6px 18px #0000000b}.support-card h3{margin:0 0 8px;font-size:14px;font-weight:850}.support-card p{margin:7px 0;color:var(--muted);font-size:11px;line-height:2}.support-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.support-actions .btn{min-width:0;font-size:10px;white-space:normal}.drive-support .support-actions button:last-child{grid-column:1/-1}.about-version{font-weight:800;color:var(--gold)!important}
 body[data-theme="light"] .support-card{background:#fff;border-color:#d8e1e7}body[data-theme="dark"] .support-card{background:#121c25}
 @media(max-width:370px){.bottom{height:72px!important;padding:5px 5px!important;gap:1px!important}.bottom .nav-item{font-size:8px!important;gap:3px;padding:3px 0!important}.bottom .nav-item svg{width:18px;height:18px}.legend{gap:10px!important}.legend-item{font-size:9px!important}}
+</style><style id="mygarage-v37-motion-pages">
+:root{scroll-behavior:smooth}
+html,body{min-height:100%;overscroll-behavior-y:contain}
+body{overflow-x:hidden}
+.app{padding-bottom:calc(122px + env(safe-area-inset-bottom))!important}
+#homePage,#historyPage,#costReportPage,#supportPage,#aboutPage{min-height:calc(100dvh - 110px);transform:translateZ(0)}
+.home-toolbar{position:sticky!important;top:calc(env(safe-area-inset-top) + 12px)!important;z-index:35!important;margin:0 0 16px!important;padding:9px 0 11px!important;background:var(--bg)!important;border:0!important;border-radius:0!important;box-shadow:0 9px 18px -17px #0008!important;isolation:isolate}
+.home-toolbar .search{margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.home-toolbar .search-box{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:0 5px 16px #0000000c!important;overflow:hidden}
+.home-toolbar .search input{background:transparent!important;border:0!important;box-shadow:none!important}
+#historyPage .search,#costReportPage .search,#supportPage .search,#aboutPage .search{display:none!important}
+.modal-back{align-items:center!important;justify-content:center!important;padding:calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom))!important;overflow:hidden!important}
+.modal{display:flex!important;flex-direction:column!important;width:min(100%,560px)!important;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 28px)!important;min-height:0!important;overflow:hidden!important;padding:0!important;border-radius:23px!important}
+.modal-title{flex:0 0 auto!important;margin:0!important;padding:18px 18px 14px!important;border-bottom:1px solid var(--line)!important}
+.modal-scroll{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;padding:5px 18px 12px!important}
+.modal-actions{position:relative!important;z-index:3!important;flex:0 0 auto!important;bottom:auto!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin:0!important;padding:12px 16px calc(12px + env(safe-area-inset-bottom))!important;background:var(--panel)!important;border-top:1px solid var(--line)!important}
+.modal-actions .btn{min-width:0!important;min-height:48px!important}
+.report-dashboard{margin-top:12px}
+.report-row{padding:12px 0;border-bottom:1px solid var(--line)}
+.report-row:last-child{border-bottom:0}
+.report-row-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px}
+.report-row-head span{font-size:11px;color:var(--gold);font-weight:800;white-space:nowrap}
+.report-bar{height:8px;margin-top:10px;border-radius:20px;background:var(--panel2);overflow:hidden}
+.report-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--gold),#70cda5);transform-origin:right center;animation:report-fill .8s cubic-bezier(.2,.8,.2,1) both}
+.page-enter{animation:page-in .34s cubic-bezier(.2,.75,.25,1) both}
+.service,.history-item,.support-card,.metric{animation:card-in .38s cubic-bezier(.2,.75,.25,1) both}
+.service:nth-child(2n){animation-delay:.035s}.service:nth-child(3n){animation-delay:.07s}
+button,.btn,.nav-item,.search-box,.support-card{transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease,border-color .2s ease,opacity .2s ease}
+button:active,.btn:active,.nav-item:active{transform:scale(.965)}
+.btn:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.bottom .nav-item svg{width:21px!important;height:21px!important;display:block!important;overflow:visible!important;fill:none!important;stroke:currentColor!important;stroke-width:1.85!important;stroke-linecap:round!important;stroke-linejoin:round!important}
+.bottom .nav-item svg *{vector-effect:non-scaling-stroke}
+#startupLoader{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;background:radial-gradient(circle at 50% 38%,#233b4d 0%,#0b1420 56%,#070d13 100%);color:#f2f5f7;opacity:1;visibility:visible;transition:opacity .45s ease,visibility .45s ease}
+#startupLoader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.loader-mark{position:relative;width:94px;height:94px;display:grid;place-items:center;border-radius:28px;background:linear-gradient(145deg,#263f51,#142434);border:1px solid #6b8291;box-shadow:0 15px 50px #0008,inset 0 1px #ffffff24;animation:loader-float 1.8s ease-in-out infinite}
+.loader-mark svg{position:absolute;inset:9px;width:76px;height:76px;fill:none;stroke:#d9bd83;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:loader-spin 5s linear infinite}
+.loader-mark span{font:900 20px/1 Arial,sans-serif;letter-spacing:1px;color:#f0d9a8;text-shadow:0 2px 12px #d9bd8366}
+#startupLoader strong{font-size:20px;font-weight:900;letter-spacing:.2px}
+.loader-caption{font-size:11px;color:#aebdca}
+.loader-track{width:154px;height:4px;border-radius:20px;background:#ffffff1a;overflow:hidden;margin-top:7px}
+.loader-track i{display:block;width:42%;height:100%;border-radius:20px;background:linear-gradient(90deg,#b89152,#f1d9a6,#78c9a2);animation:loader-progress 3.5s ease-in-out both}
+@keyframes page-in{from{opacity:0;transform:translateY(12px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes card-in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@keyframes report-fill{from{transform:scaleX(.05)}to{transform:scaleX(1)}}
+@keyframes loader-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes loader-spin{to{transform:rotate(360deg)}}
+@keyframes loader-progress{0%{transform:translateX(-150%)}100%{transform:translateX(260%)}}
+@media(max-width:420px){.home-toolbar{top:calc(env(safe-area-inset-top) + 9px)!important;padding:8px 0 10px!important}.modal-title{padding:15px 14px 12px!important}.modal-scroll{padding:4px 14px 10px!important}.modal-actions{padding:10px 12px calc(10px + env(safe-area-inset-bottom))!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><path d="M12 42 22 18l10 24 10-24 10 24"/></svg><span>MG</span></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
 <header class="top"><div><div class="brand">دفترچه سرویس خودرو</div></div><button id="themeButton" hidden></button></header>
 <section id="homePage"><div class="home-toolbar"><div class="search"><div class="search-box"><input id="search" placeholder="جست‌وجوی نام سرویس یا دسته..." oninput="renderServices();toggleSearchClear('search')" autocomplete="off"><button class="search-clear hidden" type="button" aria-label="پاک کردن جست‌وجو" onclick="clearSearch('search')">×</button></div></div></div><div class="km-card"><div class="km-head"><span>کیلومتر فعلی</span><span>KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div></div><div class="dashboard" id="dashboard"></div>
@@ -488,4 +537,6 @@ function showPage(p){document.body.dataset.page=p;['home','history','support','a
 function toggleTheme(){var t=document.body.dataset.theme==='light'?'dark':'light';document.body.dataset.theme=t;try{localStorage.setItem('mygarage_theme',t)}catch(e){}var l=document.getElementById('themeNavLabel');if(l)l.textContent=t==='light'?'تم روز':'تم شب';var b=document.getElementById('themeTab');if(b){document.querySelectorAll('.bottom .nav-item').forEach(function(x){x.classList.remove('active')});b.classList.add('active')}}
 function showCostReport(){var b=document.getElementById('reportTab');if(b){document.querySelectorAll('.bottom .nav-item').forEach(function(x){x.classList.remove('active')});b.classList.add('active')}var items=[];state.services.forEach(function(s){s.records.forEach(function(r){var n=safeNumber(r.cost);if(n!==null&&n>0){var p=parseJ(r.date);if(p)items.push({name:s.name,cost:n,year:p.jy,month:p.jm})}})});var total=items.reduce(function(a,x){return a+x.cost},0),now=todayJ(),year=items.filter(function(x){return x.year===now[0]}),month=year.filter(function(x){return x.month===now[1]}),by={};items.forEach(function(x){by[x.name]=(by[x.name]||0)+x.cost});var top=Object.entries(by).sort(function(a,b){return b[1]-a[1]}).slice(0,7),max=top.length?top[0][1]:1;var rows=top.map(function(x){return '<div class="field"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(x[0])+'</b><span>'+fmtNum(x[1])+' تومان</span></div><div style="height:7px;background:var(--panel2);border-radius:9px;overflow:hidden;margin-top:6px"><div style="height:100%;width:'+(x[1]/max*100)+'%;background:var(--gold);border-radius:9px"></div></div></div>'}).join('');var body='<div class="dashboard"><div class="metric"><strong>'+fmtNum(total)+'</strong><span>کل هزینه‌ها</span></div><div class="metric"><strong>'+fmtNum(year.reduce(function(a,x){return a+x.cost},0))+'</strong><span>امسال</span></div><div class="metric"><strong>'+fmtNum(month.reduce(function(a,x){return a+x.cost},0))+'</strong><span>این ماه</span></div></div><div class="hint">جمع هزینه‌های ثبت‌شده بر اساس تاریخ عملیات · واحد: تومان</div><div class="section-title">بیشترین هزینه بر اساس سرویس</div>'+(rows||'<div class="empty">هنوز هزینه‌ای ثبت نشده است.</div>');modal('گزارش هزینه‌های خودرو',body,function(){closeModal()});document.getElementById('modalSave').textContent='بستن'}
 function initV36(){var l=document.getElementById('themeNavLabel');if(l)l.textContent=document.body.dataset.theme==='light'?'تم روز':'تم شب';if(window.AndroidFiles&&AndroidFiles.getDriveStatus)AndroidFiles.getDriveStatus()}initV36();
+</script><script id="mygarage-v37-effects">
+(function(){const loader=document.getElementById('startupLoader');if(loader){setTimeout(function(){loader.classList.add('is-hidden');setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},500)},3500)}function normalizeAppIcons(){document.querySelectorAll('svg').forEach(function(svg){if(!svg.getAttribute('viewBox'))svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('focusable','false');if(!svg.hasAttribute('aria-hidden'))svg.setAttribute('aria-hidden','true');svg.setAttribute('preserveAspectRatio','xMidYMid meet')})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalizeAppIcons,{once:true});else normalizeAppIcons()})();
 </script></body></html>
