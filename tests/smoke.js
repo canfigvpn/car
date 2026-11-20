@@ -57,9 +57,9 @@ assert.ok(values.rDateCalendar.innerHTML.includes('calendar-close'), 'calendar m
 app.chooseJalaliDate(1405, 8, 22);
 assert.equal(values.rDate.value, '1405/08/22', 'selecting a Jalali day must fill the date field');
 assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
-assert.ok(html.includes('Google Drive') && html.includes('driveSync'), 'Drive controls must exist');
+assert.ok(html.includes('Google Drive') && html.includes('driveSync') && html.includes('driveRestore'), 'online Google Drive controls must exist');
 assert.ok(html.includes('تنظیمات سرویس'), 'service settings label must exist');
-assert.ok(html.includes('home-toolbar') && html.includes('toolbar-menu'), 'home toolbar must place the menu at upper-left beside search');
+assert.ok(html.includes('home-toolbar') && html.includes('id="search"'), 'home search toolbar must exist without hamburger menu');
 assert.equal((html.match(/id="search"/g)||[]).length,1,'home search must exist exactly once');
 assert.ok(html.includes('add-service-button') && html.includes('function addService()'), 'custom service creation must be available');
 assert.ok(!html.includes('id="sortFilter"') && !html.includes("getElementById('sortFilter')"), 'sort control must be replaced by add-service action');
@@ -127,10 +127,11 @@ assert.ok(!html.includes('با تغییر کیلومتر، وضعیت و اول�
 assert.ok(!html.includes('مدیریت هوشمند نگهداری خودرو'), 'management subtitle must be removed');
 assert.ok(html.includes('aria-label="راهنمای وضعیت سرویس‌ها"') && html.includes('flex-wrap:nowrap!important'), 'all status labels must stay in one horizontal row');
 assert.ok(html.includes('status-heading status-') && html.includes('legend-item status-green'), 'status headings and legend labels must use matching clear colors');
-assert.ok(html.includes('service-history-label') && html.includes('سوابق \'+esc(s.name)+\' · \'+s.records.length+\' سابقه'), 'service cards must show service-specific history instead of category');
+assert.ok(html.includes('service-history-label') && html.includes('سوابق '+"'+esc(s.name)+' · '+count+' سابقه"), 'service cards must show service-specific history instead of category');
 assert.ok(html.includes("modal('سوابق '+esc(s.name)+' · '+s.records.length+' سابقه'"), 'history modal title must include service name and record count');
 assert.ok(html.includes('<span>کیلومتر فعلی</span><span>KM</span>'), 'main odometer title must use the shorter label');
 assert.ok(!html.includes('>کیلومتر فعلی خودرو</button>') && html.includes('>کیلومتر فعلی</button>'), 'record action button must use the shorter label');
-assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('class="nav-item nav-menu"') && html.includes('mygarage-v35-floating-navbar'), 'floating notch navbar with integrated hamburger must exist');
+assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('mygarage-v36-floating-navbar') && (html.match(/class="nav-item/g)||[]).length===6, 'six-item floating notch navbar must exist');
+assert.ok(html.includes('id="supportPage"') && html.includes('id="aboutPage"') && !html.includes('drawerOverlay'), 'support/about pages must replace the hamburger drawer');
 
-assert.ok(html.includes("document.getElementById('homeTab').classList.toggle('active'") && html.includes("document.getElementById('historyTab').classList.toggle('active'"), 'bottom navigation active state must follow the selected page');
+assert.ok(html.includes('function showPage(p)') && html.includes("n+'Tab'") && html.includes('function toggleTheme()'), 'six navigation items must switch pages and theme');
