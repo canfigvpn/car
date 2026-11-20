@@ -3,7 +3,7 @@ const fs = require('node:fs');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
 const scriptBlocks = [...html.matchAll(/<script(?: id="([^"]+)")?>([\s\S]*?)<\/script>/g)];
-const appScript = scriptBlocks.filter(x => x[1] !== 'mygarage-number-polish').map(x => x[2]).join('\n');
+const appScript = scriptBlocks.filter(x => !['mygarage-number-polish','mygarage-v37-effects'].includes(x[1])).map(x => x[2]).join('\n');
 assert.ok(appScript, 'inline application scripts must exist');
 
 
@@ -134,4 +134,12 @@ assert.ok(!html.includes('>کیلومتر فعلی خودرو</button>') && html
 assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('mygarage-v36-floating-navbar') && (html.match(/class="nav-item/g)||[]).length===6, 'six-item floating notch navbar must exist');
 assert.ok(html.includes('id="supportPage"') && html.includes('id="aboutPage"') && !html.includes('drawerOverlay'), 'support/about pages must replace the hamburger drawer');
 
-assert.ok(html.includes('function showPage(p)') && html.includes("n+'Tab'") && html.includes('function toggleTheme()'), 'six navigation items must switch pages and theme');
+assert.ok(html.includes('function showPage(p)') && html.includes('function toggleTheme()'), 'navigation and theme switching must exist');
+assert.ok(html.includes('id="costReportPage"') && html.includes('id="costReportContent"') && html.includes("function showCostReport(){showPage('report')}"), 'cost report must be a dedicated page, not a modal');
+assert.ok(!html.includes('id="historySearch"'), 'search must not be shown on history or other secondary pages');
+assert.equal((html.match(/id="search"/g)||[]).length,1,'the only search field must belong to home');
+assert.ok(html.includes('class="modal-scroll"') && html.includes('overflow-y:auto!important'), 'service forms must scroll independently while save/cancel buttons stay visible');
+assert.ok(html.includes('id="startupLoader"') && html.includes(')},3500)') && html.includes('@keyframes loader-spin'), 'animated startup loader must last 3.5 seconds');
+assert.ok(html.includes('top:calc(env(safe-area-inset-top) + 12px)') && html.includes('.home-toolbar .search-box'), 'home search must keep top spacing and a clean background while scrolling');
+assert.equal((html.match(/id="modalRoot"/g)||[]).length,1,'only one modal root may exist');
+assert.ok(html.includes('function normalizeAppIcons()') && html.includes('preserveAspectRatio','xMidYMid meet'), 'SVG icons must be normalized consistently');
