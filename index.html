@@ -569,9 +569,7 @@ function showPage(p){var pages=['home','history','report','support','about'];if(
 function showCostReport(){showPage('report')}
 function updateThemeLabel(){var label=document.getElementById('themeNavLabel'),theme=document.body.dataset.theme==='light'?'شب':'روز';if(label)label.textContent='تم '+theme;var button=document.getElementById('themeButton');if(button)button.textContent=theme==='شب'?'حالت تیره':'حالت روشن'}
 function toggleTheme(){var theme=document.body.dataset.theme==='light'?'dark':'light';document.body.dataset.theme=theme;try{localStorage.setItem('mygarage_theme',theme)}catch(e){}updateThemeLabel()}
-</script><script id="mygarage-v37-effects">
-(function(){const loader=document.getElementById('startupLoader');if(loader){setTimeout(function(){loader.classList.add('is-hidden');setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},500)},3500)}function normalizeAppIcons(){document.querySelectorAll('.material-symbols-rounded').forEach(function(icon){icon.setAttribute('aria-hidden','true');icon.setAttribute('translate','no')})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalizeAppIcons,{once:true});else normalizeAppIcons()})();
-</script><script id="mygarage-storage-persistence">(function(){if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}})();</script>
+</script><script id="mygarage-v37-effects">(function(){function normalizeAppIcons(){document.querySelectorAll(".material-symbols-rounded").forEach(function(icon){icon.setAttribute("aria-hidden","true");icon.setAttribute("translate","no")})}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",normalizeAppIcons,{once:true});else normalizeAppIcons()})();</script><script id="mygarage-storage-persistence">(function(){if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}})();</script>
 <script id="mygarage-professional-reliability-v1">
 /* Reliability, validation, accessibility and persistence hardening. */
 (function(){
@@ -1629,3 +1627,110 @@ document.addEventListener('DOMContentLoaded',function(){
 .search-page-head>button:before{content:"";width:11px;height:11px;border-left:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(45deg);margin-left:4px}
 .search-page-head>div{grid-column:1/-1;grid-row:2;text-align:center}
 </style>
+
+
+<style id="mygarage-ui-refresh-v8">
+/* Compact page endings and consistent page-header alignment */
+.app{padding-bottom:0!important}
+#homePage,#historyPage,#searchPage,#costReportPage,#morePage,#aboutPage,#supportPage{padding-bottom:10px!important;margin-bottom:0!important}
+#serviceActionPage{min-height:0!important;padding-bottom:12px!important;margin-bottom:0!important}
+.internal-page-head,.search-page-head,.action-page-head{
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:flex-start!important;gap:11px!important;
+ margin:7px 2px 15px!important;padding:4px 0 13px!important;
+}
+.internal-page-head .page-back,.search-page-head>button,.action-page-head .page-back{
+ order:0!important;flex:0 0 43px!important;width:43px!important;height:43px!important;
+ padding:0!important;display:grid!important;place-items:center!important;
+ align-self:center!important;margin:0!important;
+}
+.internal-page-head .page-heading,.search-page-head>div,.action-page-head .action-page-title{
+ order:1!important;flex:1 1 auto!important;min-width:0!important;
+ display:flex!important;flex-direction:column!important;align-items:flex-start!important;
+ justify-content:center!important;text-align:right!important;grid-column:auto!important;grid-row:auto!important;
+}
+.internal-page-head .page-heading strong,.search-page-head strong,.action-page-title strong{font-size:16px!important}
+.internal-page-head .page-heading small,.search-page-head span,.action-page-title small{margin-top:4px!important}
+.page-back{position:relative!important;font-size:0!important;line-height:0!important}
+.page-back:before,.search-page-head>button:before{
+ content:""!important;width:10px!important;height:10px!important;
+ border-left:2.5px solid currentColor!important;border-bottom:2.5px solid currentColor!important;
+ transform:rotate(45deg)!important;margin:0 3px 0 0!important;
+}
+.internal-page-head .page-back svg,.action-page-head .page-back svg{display:none!important}
+.search-page-head>button{font-size:0!important}
+#dashboard .metric:nth-child(1){--metric-accent:#697783!important}
+#dashboard .metric:nth-child(2){--metric-accent:#e36e70!important}
+#dashboard .metric:nth-child(3){--metric-accent:#64c895!important}
+#dashboard .metric:nth-child(4){--metric-accent:#8294a5!important}
+#dashboard .metric{border:1.5px solid var(--metric-accent)!important}
+#dashboard .metric:before{display:none!important}
+.km-head{justify-content:flex-start!important;gap:9px!important}
+.km-head span:first-child{display:inline-flex!important;align-items:center!important;gap:7px!important}
+.km-head span:first-child:before{margin:0!important}
+.km-head span:last-child{margin-inline-start:auto!important;min-width:48px!important;text-align:center!important}
+.km-input>span{display:none!important}
+#startupLoader{overflow:hidden}
+.loader-wave{width:min(82vw,390px);height:88px;display:block;overflow:visible}
+.loader-wave path{fill:none;stroke-linecap:round;stroke-width:2.5;stroke-dasharray:7 9;animation:loader-wave-flow 1.15s linear infinite}
+.loader-wave path:nth-child(1){stroke:#d7bd87;opacity:.95}
+.loader-wave path:nth-child(2){stroke:#72d5a3;opacity:.8;animation-delay:-.3s}
+.loader-wave path:nth-child(3){stroke:#8faec5;opacity:.65;animation-delay:-.6s}
+.loader-wave path:nth-child(4){stroke:#e6d3ac;opacity:.45;animation-delay:-.9s}
+.loader-wave-wrap{width:min(86vw,410px);padding:12px 0 4px;display:grid;place-items:center}
+#startupLoader .loader-caption{margin-top:2px}
+#startupLoader .loader-track{width:min(65vw,220px);height:3px}
+#startupLoader .loader-track i{width:35%;animation:loader-progress 3.5s ease-in-out both}
+@keyframes loader-wave-flow{to{stroke-dashoffset:-64}}
+@media(prefers-reduced-motion:reduce){.loader-wave path{animation:none}.scroll-top-button{transition:none!important}}
+.scroll-top-button{
+ position:fixed;z-index:48;width:43px;height:43px;border-radius:14px;
+ display:grid;place-items:center;border:1px solid #d7bd8770;
+ color:#f0d9a8;background:linear-gradient(145deg,#263b4b,#17232e);
+ box-shadow:0 7px 22px #0005;backdrop-filter:blur(12px);
+ opacity:0;visibility:hidden;pointer-events:none;transform:translateY(7px);
+ transition:opacity .22s ease,transform .22s ease,visibility .22s ease;
+}
+.scroll-top-button.is-visible{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}
+.scroll-top-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+body[data-theme="light"] .scroll-top-button{background:linear-gradient(145deg,#fff,#e6edf2);color:#785b2c;border-color:#c6aa78}
+</style>
+<script id="mygarage-ui-refresh-v8-js">
+(function(){
+ 'use strict';
+ function id(x){return document.getElementById(x)}
+ function setupLoader(){
+  var loader=id('startupLoader');if(!loader)return;
+  loader.innerHTML='<div class="loader-wave-wrap"><svg class="loader-wave" viewBox="0 0 390 88" role="img" aria-label="انیمیشن موج خطی"><path d="M0 44 C24 8 48 8 72 44 S120 80 144 44 192 8 216 44 264 80 288 44 336 8 360 44 384 65 390 44"/><path d="M0 44 C24 80 48 80 72 44 S120 8 144 44 192 80 216 44 264 8 288 44 336 80 360 44 384 23 390 44"/><path d="M0 44 C18 23 36 23 54 44 S90 65 108 44 144 23 162 44 198 65 216 44 252 23 270 44 306 65 324 44 360 23 378 44"/><path d="M0 44 C18 65 36 65 54 44 S90 23 108 44 144 65 162 44 198 23 216 44 252 65 270 44 306 23 324 44 360 65 378 44"/></svg></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div>';
+  var started=Date.now(),loaded=document.readyState==='complete';
+  if(!loaded)window.addEventListener('load',function(){loaded=true;finishWhenReady()},{once:true});
+  function finishWhenReady(){
+   if(!loaded)return;
+   var wait=Math.max(0,3500-(Date.now()-started));
+   setTimeout(function(){loader.classList.add('is-hidden');setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},500)},wait);
+  }
+  finishWhenReady();
+ }
+ function setupScrollTop(){
+  if(id('scrollTopButton'))return;
+  var b=document.createElement('button');b.id='scrollTopButton';b.className='scroll-top-button';
+  b.type='button';b.setAttribute('aria-label','رفتن به بالای صفحه');b.title='رفتن به بالای صفحه';
+  b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg>';
+  b.addEventListener('click',function(){window.scrollTo({top:0,left:0,behavior:'smooth'})});
+  document.body.appendChild(b);
+  function position(){
+   var home=id('homeTab'),nav=home&&home.getBoundingClientRect();
+   if(nav){b.style.left=(nav.left+nav.width/2-21.5)+'px';b.style.right='auto';b.style.bottom=Math.max(12,window.innerHeight-nav.top+9)+'px'}
+   else{b.style.left='16px';b.style.bottom='90px'}
+   b.classList.toggle('is-visible',window.scrollY>180);
+  }
+  window.addEventListener('scroll',position,{passive:true});
+  window.addEventListener('resize',position);
+  window.addEventListener('orientationchange',position);
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',position);
+  position();
+ }
+ function init(){setupLoader();setupScrollTop()}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
