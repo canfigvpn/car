@@ -1168,7 +1168,7 @@ function buildMorePage(){
  var content=document.createElement('div');content.className='more-page-content';
  var support=byId('supportPage'),about=byId('aboutPage');
  var supportTitle=document.createElement('div');supportTitle.className='section-title';supportTitle.textContent='پشتیبان‌گیری';content.appendChild(supportTitle);
- if(support){Array.from(support.children).forEach(function(node){if(node.classList&&node.classList.contains('section-title'))return;content.appendChild(node.cloneNode(true))});support.classList.add('hidden');support.setAttribute('aria-hidden','true');}
+ if(support){Array.from(support.children).forEach(function(node){if(node.classList&&node.classList.contains('section-title'))return;content.appendChild(node)});support.classList.add('hidden');support.setAttribute('aria-hidden','true');}
  var divider=document.createElement('div');divider.className='more-divider';content.appendChild(divider);
  var aboutTitle=document.createElement('div');aboutTitle.className='section-title more-about-heading';aboutTitle.textContent='درباره ما';content.appendChild(aboutTitle);
  if(about){Array.from(about.children).forEach(function(node){if(node.classList&&node.classList.contains('section-title'))return;content.appendChild(node.cloneNode(true))});about.classList.add('hidden');about.setAttribute('aria-hidden','true');}
