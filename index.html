@@ -1212,3 +1212,131 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+
+
+<style id="mygarage-report-pages-v5">
+/* Unified internal screens + cost analytics */
+:root{--page-radius:20px}
+.app-page,#historyPage,#searchPage,#costReportPage,#morePage{animation:page-in .28s ease both}
+.internal-page-head{display:flex;align-items:center;gap:12px;margin:8px 2px 17px;padding:4px 0 15px;border-bottom:1px solid var(--line)}
+.internal-page-head .page-back{width:40px;height:40px;flex:0 0 40px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);font-size:20px}
+.internal-page-head .page-heading{min-width:0;display:flex;flex-direction:column;gap:5px}
+.internal-page-head strong{font-size:16px;font-weight:850}
+.internal-page-head small{font-size:10px;color:var(--muted);line-height:1.8}
+#historyPage,#costReportPage,#searchPage,#morePage{padding:0 1px 18px}
+#historyPage .history-filter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}
+#historyPage .history-filter .btn{min-width:0;padding:10px 5px}
+#historyPage .history-filter .btn.active{background:var(--gold);color:#17232d;border-color:var(--gold)}
+.history-tools,.report-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.history-tools input,.report-filters select{width:100%;min-width:0;min-height:46px;padding:11px 13px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);font:inherit;font-size:12px}
+.history-tools input{grid-column:1/-1}
+.report-filters select{font-size:11px}
+.report-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.report-summary .metric{min-height:83px;display:flex;flex-direction:column;justify-content:center;gap:5px;text-align:right;padding:13px 14px}
+.report-summary .metric strong{font-size:clamp(16px,4.8vw,22px);overflow-wrap:anywhere}
+.report-summary .metric span{font-size:10px}
+.report-chart-card,.report-panel{padding:15px;margin:12px 0;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+.report-panel-title{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;font-size:13px;font-weight:850}
+.report-panel-title small{font-size:10px;color:var(--muted);font-weight:500}
+.month-chart{height:176px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;gap:8px;padding:10px 1px 0;border-bottom:1px solid var(--line)}
+.month-column{height:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px}
+.month-column .bar-value{font-size:8px;color:var(--muted);white-space:nowrap;max-width:100%;overflow:hidden}
+.month-column .bar-track{width:min(27px,70%);height:112px;display:flex;align-items:flex-end;border-radius:9px 9px 3px 3px;background:var(--panel2);overflow:hidden}
+.month-column .bar-fill{width:100%;min-height:3px;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#79d6aa,var(--gold));transition:height .35s ease}
+.month-column .bar-label{font-size:9px;color:var(--muted);padding-bottom:8px}
+.report-highlight{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px;border:1px solid var(--line);border-radius:15px;background:var(--panel2)}
+.report-highlight strong{display:block;font-size:12px}
+.report-highlight small{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.8}
+.report-highlight b{color:var(--gold);font-size:12px;white-space:nowrap}
+.report-breakdown .report-row{padding:13px 0}
+.report-breakdown .report-row-head b{font-size:11px}
+.report-breakdown .report-row-head span{font-size:10px}
+.report-record{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.report-record:last-child{border-bottom:0}
+.report-record b{font-size:11px}
+.report-record small{display:block;margin-top:5px;color:var(--muted);font-size:10px}
+.report-record strong{font-size:11px;color:var(--gold);white-space:nowrap}
+body[data-theme="light"] .internal-page-head .page-back,body[data-theme="light"] .history-tools input,body[data-theme="light"] .report-filters select,body[data-theme="light"] .report-chart-card,body[data-theme="light"] .report-panel{background:#fff}
+@media(max-width:360px){.report-summary{gap:6px}.report-summary .metric{padding:10px}.month-chart{gap:4px}.month-column .bar-value{font-size:7px}.history-tools,.report-filters{gap:6px}}
+</style>
+<script id="mygarage-report-pages-v5">
+(function(){
+'use strict';
+var reportYear='all',reportMonth='all',historyText='';
+function byId(id){return document.getElementById(id)}
+function safeText(v){return typeof esc==='function'?esc(v):String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function pageHead(title,subtitle){return '<header class="internal-page-head"><button class="page-back" type="button" onclick="showPage(\'home\')" aria-label="بازگشت به خانه">‹</button><div class="page-heading"><strong>'+title+'</strong><small>'+subtitle+'</small></div></header>'}
+function collectCosts(){
+ var items=[];
+ if(!state||!Array.isArray(state.services))return items;
+ state.services.forEach(function(service){
+  (service.records||[]).forEach(function(record){
+   var cost=typeof safeNumber==='function'?safeNumber(record.cost):Number(String(record.cost||'').replace(/[^0-9.]/g,''));
+   var date=typeof parseJ==='function'?parseJ(record.date):null;
+   if(cost>0&&date)items.push({name:service.name,cost:cost,date:record.date,km:record.km,year:date.jy,month:date.jm});
+  });
+ });
+ return items.sort(function(a,b){return a.year-b.year||a.month-b.month||String(a.date).localeCompare(String(b.date))});
+}
+function filteredCosts(){
+ return collectCosts().filter(function(x){return (reportYear==='all'||String(x.year)===reportYear)&&(reportMonth==='all'||String(x.month)===reportMonth)});
+}
+function money(n){return typeof fmtNum==='function'?fmtNum(Math.round(n)):Math.round(n).toLocaleString('fa-IR')}
+function monthName(m){return ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'][m-1]||''}
+function renderReport(){
+ var target=byId('costReportContent');if(!target)return;
+ var all=collectCosts(),items=filteredCosts(),total=items.reduce(function(a,x){return a+x.cost},0);
+ var now=typeof todayJ==='function'?todayJ():[1405,1,1],years=[...new Set(all.map(function(x){return x.year}))].sort(function(a,b){return b-a});
+ var byName={};items.forEach(function(x){byName[x.name]=(byName[x.name]||0)+x.cost});
+ var ranked=Object.keys(byName).map(function(k){return {name:k,total:byName[k]}}).sort(function(a,b){return b.total-a.total});
+ var highest=items.slice().sort(function(a,b){return b.cost-a.cost})[0];
+ var monthData=[];
+ for(var offset=5;offset>=0;offset--){var idx=now[0]*12+(now[1]-1)-offset,y=Math.floor(idx/12),m=idx%12+1;monthData.push({year:y,month:m,total:all.filter(function(x){return x.year===y&&x.month===m}).reduce(function(a,x){return a+x.cost},0)})}
+ var peak=Math.max.apply(null,monthData.map(function(x){return x.total}).concat([1]));
+ var chart=monthData.map(function(x){var h=x.total?Math.max(4,x.total/peak*100):0;return '<div class="month-column"><span class="bar-value">'+(x.total?money(x.total):'—')+'</span><div class="bar-track"><i class="bar-fill" style="height:'+h+'%"></i></div><span class="bar-label">'+monthName(x.month).slice(0,3)+'</span></div>'}).join('');
+ var yearsOptions='<option value="all">تمام سال‌ها</option>'+years.map(function(y){return '<option value="'+y+'" '+(reportYear===String(y)?'selected':'')+'>'+y+'</option>'}).join('');
+ var monthsOptions='<option value="all">تمام ماه‌ها</option>'+Array.from({length:12},function(_,i){return '<option value="'+(i+1)+'" '+(reportMonth===String(i+1)?'selected':'')+'>'+monthName(i+1)+'</option>'}).join('');
+ var topRows=ranked.slice(0,7).map(function(x){return '<div class="report-row"><div class="report-row-head"><b>'+safeText(x.name)+'</b><span>'+money(x.total)+' تومان</span></div><div class="report-bar"><i style="width:'+(x.total/(ranked[0]?ranked[0].total:1)*100)+'%"></i></div></div>'}).join('');
+ var records=items.slice().sort(function(a,b){return b.year-a.year||b.month-a.month||String(b.date).localeCompare(String(a.date))}).slice(0,12).map(function(x){return '<div class="report-record"><div><b>'+safeText(x.name)+'</b><small>'+safeText(x.date)+(x.km?' · '+money(Number(x.km))+' کیلومتر':'')+'</small></div><strong>'+money(x.cost)+' تومان</strong></div>'}).join('');
+ target.innerHTML=pageHead('گزارش هزینه‌ها','تحلیل هزینه‌های سرویس و نگهداری خودرو')+
+ '<div class="report-filters"><select id="reportYearFilter" aria-label="فیلتر سال">'+yearsOptions+'</select><select id="reportMonthFilter" aria-label="فیلتر ماه">'+monthsOptions+'</select></div>'+
+ '<div class="report-summary"><div class="metric"><strong>'+money(total)+'</strong><span>مجموع هزینه‌ها · تومان</span></div><div class="metric"><strong>'+items.length.toLocaleString('fa-IR')+'</strong><span>تعداد عملیات هزینه‌دار</span></div></div>'+
+ '<section class="report-chart-card"><div class="report-panel-title">هزینه ماهانه <small>۶ ماه اخیر · تومان</small></div><div class="month-chart">'+chart+'</div></section>'+
+ '<section class="report-panel"><div class="report-panel-title">گران‌ترین سرویس ثبت‌شده</div>'+(highest?'<div class="report-highlight"><div><strong>'+safeText(highest.name)+'</strong><small>'+safeText(highest.date)+' · '+(highest.km?money(Number(highest.km))+' کیلومتر':'کیلومتر ثبت نشده')+'</small></div><b>'+money(highest.cost)+' تومان</b></div>':'<div class="empty">هنوز هزینه‌ای ثبت نشده است.</div>')+'</section>'+
+ '<section class="report-panel"><div class="report-panel-title">هزینه به تفکیک سرویس</div><div class="report-breakdown">'+(topRows||'<div class="empty">برای این بازه هزینه‌ای ثبت نشده است.</div>')+'</div></section>'+
+ '<section class="report-panel"><div class="report-panel-title">آخرین هزینه‌های ثبت‌شده <small>۱۲ مورد</small></div>'+(records||'<div class="empty">موردی برای نمایش وجود ندارد.</div>')+'</section>';
+ var yf=byId('reportYearFilter'),mf=byId('reportMonthFilter');
+ if(yf)yf.addEventListener('change',function(){reportYear=this.value;renderReport()});
+ if(mf)mf.addEventListener('change',function(){reportMonth=this.value;renderReport()});
+}
+window.renderCostReport=renderReport;
+window.showCostReport=function(){window.showPage('report')};
+function installHistoryTools(){
+ var page=byId('historyPage');if(!page||byId('historySearch'))return;
+ var title=page.querySelector('.section-title');
+ if(title)title.insertAdjacentHTML('afterend',pageHead('تاریخچه خودرو','تمام تغییرات، سرویس‌ها و عملیات ثبت‌شده'));
+ var hint=page.querySelector('.hint');if(hint)hint.remove();
+ var filters=page.querySelector('.history-filter');
+ if(filters)filters.insertAdjacentHTML('beforebegin','<div class="history-tools"><input id="historySearch" type="search" placeholder="جست‌وجو در تاریخچه..." aria-label="جست‌وجو در تاریخچه"></div>');
+ var input=byId('historySearch');if(input)input.addEventListener('input',function(){historyText=this.value;renderHistoryEnhanced()});
+}
+function renderHistoryEnhanced(){
+ var list=byId('historyList'),count=byId('historyCount');if(!list)return;
+ var logs=(state.logs||[]).filter(function(x){return (typeof historyMode==='undefined'||historyMode==='all'||x.type===historyMode)&&normalizeSearch([x.action,x.service,x.detail,x.date].join(' ')).includes(normalizeSearch(historyText))});
+ if(count)count.textContent=logs.length.toLocaleString('fa-IR')+' رویداد';
+ list.innerHTML=logs.length?logs.slice().reverse().map(function(x){return '<article class="history-item"><b>'+safeText(x.action)+' · '+safeText(x.service)+'</b><div class="when">'+safeText(x.date)+' · ساعت '+safeText(x.time)+'</div><div class="details">'+safeText(x.detail)+'</div></article>'}).join(''):'<div class="empty">موردی در تاریخچه پیدا نشد.</div>';
+}
+window.renderHistory=renderHistoryEnhanced;
+var oldFilter=window.filterHistory;
+window.filterHistory=function(mode,el){if(typeof historyMode!=='undefined')historyMode=mode;document.querySelectorAll('.history-filter button').forEach(function(b){b.classList.toggle('active',b===el)});renderHistoryEnhanced()};
+var oldShowPage=window.showPage;
+window.showPage=function(page){if(typeof oldShowPage==='function')oldShowPage(page);if(page==='history'){installHistoryTools();renderHistoryEnhanced()}if(page==='report')renderReport();if(page==='search'){var p=byId('searchPage');if(p&&!p.querySelector('.internal-page-head')){var box=p.querySelector('.search-page-head');if(box){box.classList.add('internal-page-head');}}}};
+function init(){
+ installHistoryTools();
+ var search=byId('searchPage');if(search){var head=search.querySelector('.search-page-head');if(head){head.classList.add('internal-page-head');var title=head.querySelector('strong'),sub=head.querySelector('span');if(title)title.textContent='جست‌وجوی سرویس‌ها';if(sub)sub.textContent='نام سرویس، دسته یا توضیحات را جست‌وجو کن';}}
+ var report=byId('costReportPage');if(report){var title=report.querySelector('.section-title');if(title)title.remove();}
+ var more=byId('morePage');if(more&&!more.querySelector('.internal-page-head')){var content=more.querySelector('.more-page-content');if(content)content.insertAdjacentHTML('afterbegin',pageHead('بیشتر','پشتیبان‌گیری و اطلاعات برنامه'));}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
