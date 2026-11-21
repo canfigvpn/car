@@ -1340,3 +1340,173 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+
+<style id="mygarage-ui-refresh-v6">
+/* MY GARAGE UI refresh v6 */
+:root{--ui-gold:#d9bd87;--ui-glass:rgba(20,31,42,.92);--ui-line:rgba(184,202,215,.14)}
+html{scroll-behavior:smooth}
+body{padding-bottom:calc(100px + env(safe-area-inset-bottom))!important}
+.app{padding-bottom:calc(105px + env(safe-area-inset-bottom))!important}
+#homePage{padding-bottom:20px}
+.km-card{padding:20px!important;border-radius:25px!important;background:radial-gradient(circle at 85% 10%,#34506455,transparent 35%),linear-gradient(145deg,#1b3444,#101c27 75%)!important;border:1px solid #59718366!important;box-shadow:0 18px 45px #0005,inset 0 1px #ffffff12!important}
+.km-head{font-size:12px!important;letter-spacing:.2px}
+.km-head span:last-child{padding:5px 9px;border:1px solid #a8c4b51f;border-radius:8px;color:#a8d9bd!important;font:800 10px ui-monospace,monospace;letter-spacing:1.5px}
+.km-input{min-height:78px!important;gap:10px!important;padding:9px 12px!important;border-radius:17px!important;background:repeating-linear-gradient(90deg,#07120f 0,#07120f 3px,#091713 3px,#091713 6px)!important;border:1px solid #4a806b!important;box-shadow:inset 0 3px 22px #000b,0 0 0 4px #07120f66!important}
+.km-input input{height:58px!important;min-width:0!important;font-size:clamp(34px,9vw,48px)!important;font-weight:900!important;letter-spacing:3px!important;color:#a8f2c5!important;text-shadow:0 0 13px #5ce39a66!important}
+.km-input span{font-size:10px!important;color:#a8c9b8!important}
+#dashboard{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important;margin:13px 0 12px!important}
+#dashboard .metric{position:relative;overflow:hidden;min-height:78px;padding:12px 5px 10px!important;border-radius:16px!important;background:linear-gradient(150deg,#1b2a36,#111d27)!important;border:1px solid #ffffff12!important;box-shadow:0 8px 18px #0002!important}
+#dashboard .metric:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:var(--metric-accent,#758696)}
+#dashboard .metric:nth-child(1){--metric-accent:#e36e70}
+#dashboard .metric:nth-child(2){--metric-accent:#e6b36a}
+#dashboard .metric:nth-child(3){--metric-accent:#64c895}
+#dashboard .metric:nth-child(4){--metric-accent:#8294a5}
+#dashboard .metric strong{font-size:clamp(19px,5vw,25px)!important;font-weight:900!important}
+#dashboard .metric span{font-size:9px!important;line-height:1.6;display:block;margin-top:4px}
+.home-insight{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:8px;margin:9px 0 17px}
+.home-insight-card{min-width:0;padding:13px;border:1px solid var(--ui-line);border-radius:16px;background:linear-gradient(145deg,#1a2a36,#111c26);box-shadow:0 7px 18px #0002}
+.home-insight-card small{display:block;color:var(--muted);font-size:9px;margin-bottom:7px}
+.home-insight-card strong{display:block;color:var(--text);font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.home-insight-card span{display:block;color:#c2ced6;font-size:10px;line-height:1.8;margin-top:4px}
+.home-insight-card.cost strong{color:var(--gold);font-size:15px}
+.filters{margin:13px 0!important}
+.service{position:relative;border-radius:16px!important;padding:12px 13px!important;margin:8px 0!important;box-shadow:0 5px 15px #0000001c!important}
+.service-head{align-items:center!important}
+.service-name{font-size:13px!important}
+.service-history-label{font-size:9px!important;color:var(--muted)!important;margin-top:4px!important}
+.service .status{font-size:9px!important;padding:5px 8px!important}
+.service-info{display:grid;gap:3px;margin-top:8px!important;font-size:10px!important;line-height:1.85!important}
+.service-info .info-line{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.service-info .guide{margin-top:5px!important;padding:7px 9px!important;font-size:9px!important;line-height:1.7!important}
+.service-actions{display:grid!important;grid-template-columns:1.15fr 1fr 1fr;gap:6px!important;margin-top:10px!important}
+.service-actions .btn{min-height:36px!important;padding:7px 5px!important;font-size:9px!important;border-radius:10px!important}
+.service.status-red,.service.red{border-inline-start:3px solid #e17a7d!important}
+.service.status-black,.service.black{border-inline-start:3px solid #8c969e!important}
+.service.status-green,.service.green{border-inline-start:3px solid #68c795!important}
+.service.soft{border-inline-start:3px solid #8394a3!important}
+.smooth-modern-navbar{position:fixed!important;z-index:50!important;left:50%!important;right:auto!important;bottom:calc(9px + env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;width:min(760px,calc(100% - 20px))!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:3px!important;margin:0!important;padding:7px 6px calc(7px + env(safe-area-inset-bottom))!important;border:1px solid #ffffff1c!important;border-radius:20px!important;background:rgba(13,22,31,.91)!important;box-shadow:0 12px 38px #0008,0 1px #ffffff12 inset!important;backdrop-filter:blur(24px) saturate(1.4)!important;-webkit-backdrop-filter:blur(24px) saturate(1.4)!important}
+.smooth-modern-navbar .nav-item{min-width:0!important;min-height:54px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important;padding:5px 2px!important;border:1px solid transparent!important;border-radius:14px!important;background:transparent!important;color:#91a0ad!important;font-size:9px!important;font-weight:600!important;transition:background .22s ease,color .22s ease,transform .22s ease,border-color .22s ease!important}
+.smooth-modern-navbar .nav-item .material-symbols-rounded{font-size:21px!important;line-height:1!important;font-variation-settings:'FILL' 0,'wght' 450,'GRAD' 0,'opsz' 24}
+.smooth-modern-navbar .nav-item.active{color:#f0d49b!important;background:linear-gradient(145deg,#d9bd8724,#d9bd870b)!important;border-color:#d9bd8738!important;box-shadow:inset 0 1px #ffffff10!important}
+.smooth-modern-navbar .nav-item.active .material-symbols-rounded{font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 24}
+.smooth-modern-navbar .nav-item:active{transform:scale(.94)!important}
+.app-page,#historyPage,#searchPage,#costReportPage,#morePage{animation:garage-page-in .24s ease both}
+@keyframes garage-page-in{from{opacity:.45;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.internal-page-head,.search-page-head{min-height:60px!important;margin:7px 2px 15px!important;padding:7px 0 13px!important;border-bottom:1px solid var(--ui-line)!important}
+.internal-page-head strong,.search-page-head strong{font-size:15px!important}
+.report-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.report-summary .metric{border-radius:16px!important}
+.report-chart-card,.report-panel{border-radius:17px!important}
+.report-month-chart{height:165px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end;padding:12px 3px 0;border-bottom:1px solid var(--line)}
+.report-month{height:100%;display:flex;min-width:0;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.report-month .bar{width:min(26px,70%);min-height:3px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#a9e6c4,#c6a76e);box-shadow:0 0 12px #9bd7b52b}
+.report-month small{font-size:8px;color:var(--muted);white-space:nowrap}
+.report-month b{font-size:8px;color:var(--muted);font-weight:500;white-space:nowrap}
+.report-best{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-radius:13px;background:var(--panel2);border:1px solid var(--line)}
+.report-best strong{font-size:12px}
+.report-best small{display:block;margin-top:5px;color:var(--muted);font-size:9px}
+.report-best b{font-size:12px;color:var(--gold);white-space:nowrap}
+.report-record{gap:8px}
+body[data-theme="light"] .home-insight-card{background:linear-gradient(145deg,#fff,#edf2f5);border-color:#d7e0e6}
+body[data-theme="light"] .home-insight-card span{color:#536875}
+body[data-theme="light"] .smooth-modern-navbar{background:rgba(249,251,252,.94)!important;border-color:#d6e0e6!important;box-shadow:0 12px 35px #263b4b24,0 1px #fff inset!important}
+body[data-theme="light"] .smooth-modern-navbar .nav-item{color:#667986!important}
+body[data-theme="light"] .smooth-modern-navbar .nav-item.active{color:#805c25!important;background:#d9bd8725!important;border-color:#d9bd8755!important}
+body[data-theme="light"] #dashboard .metric{background:linear-gradient(150deg,#fff,#f0f4f6)!important;border-color:#dce4e9!important}
+body[data-theme="light"] .km-card{background:radial-gradient(circle at 85% 10%,#c7d9e455,transparent 35%),linear-gradient(145deg,#e5edf2,#f9fbfc 75%)!important}
+body[data-theme="light"] .km-input{background:repeating-linear-gradient(90deg,#e0eee5 0,#e0eee5 3px,#e8f4eb 3px,#e8f4eb 6px)!important;border-color:#a2c5ae!important}
+body[data-theme="light"] .km-input input{color:#176b48!important;text-shadow:0 0 8px #5ab17d44!important}
+@media(max-width:390px){#dashboard{gap:6px!important}#dashboard .metric{min-height:70px;padding:10px 3px!important}.home-insight{gap:6px}.home-insight-card{padding:10px}.smooth-modern-navbar{width:calc(100% - 12px)!important;bottom:calc(5px + env(safe-area-inset-bottom))!important;padding-inline:3px!important}.smooth-modern-navbar .nav-item{font-size:8px!important}.smooth-modern-navbar .nav-item .material-symbols-rounded{font-size:19px!important}.service-actions .btn{font-size:8px!important}}
+@media(prefers-reduced-motion:reduce){.app-page,#historyPage,#searchPage,#costReportPage,#morePage{animation:none!important}.smooth-modern-navbar .nav-item{transition:none!important}}
+
+</style>
+<script id="mygarage-ui-refresh-v6-js">
+
+/* MY GARAGE UI refresh v6 - dashboard, navigation and cost analytics */
+(function(){
+'use strict';
+var reportYear='all',reportMonth='all';
+function byId(id){return document.getElementById(id)}
+function money(n){return typeof fmtNum==='function'?fmtNum(Math.round(Number(n)||0)):String(Math.round(Number(n)||0))}
+function allCostRecords(){
+ var out=[];
+ if(!window.state||!Array.isArray(state.services))return out;
+ state.services.forEach(function(s){(s.records||[]).forEach(function(r){
+  var n=typeof safeNumber==='function'?safeNumber(r.cost):Number(r.cost);
+  var p=typeof parseJ==='function'?parseJ(r.date):null;
+  if(n>0&&p)out.push({name:s.name,cost:n,date:r.date,km:r.km,year:p.jy,month:p.jm});
+ });});
+ return out;
+}
+function renderDashboardPro(){
+ var target=byId('dashboard');if(!target||!window.state)return;
+ var counts={black:0,red:0,green:0,soft:0};
+ (state.services||[]).filter(function(s){return s.enabled!==false}).forEach(function(s){var st=status(s);counts[st]=(counts[st]||0)+1});
+ target.innerHTML=[
+  ['black','عقب‌افتاده'],['red','نزدیک موعد'],['green','به‌روز'],['soft','بدون بازه / ثبت‌نشده']
+ ].map(function(x){return '<div class="metric"><strong>'+money(counts[x[0]])+'</strong><span>'+x[1]+'</span></div>'}).join('');
+ var home=byId('homePage');if(!home)return;
+ var insight=byId('homeInsight');
+ if(!insight){insight=document.createElement('div');insight.id='homeInsight';insight.className='home-insight';target.insertAdjacentElement('afterend',insight)}
+ var candidates=(state.services||[]).filter(function(s){return s.enabled!==false&&status(s)!=='soft'}).sort(function(a,b){var rank={black:0,red:1,green:2,soft:3};return rank[status(a)]-rank[status(b)]});
+ var next=candidates[0],costs=allCostRecords(),total=costs.reduce(function(a,x){return a+x.cost},0);
+ insight.innerHTML='<div class="home-insight-card"><small><span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle">event_upcoming</span> سرویس بعدی</small><strong>'+(next?String(next.name).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]}):'سرویسی در صف موعد نیست')+'</strong><span>'+(next?label(status(next))+' · '+dueInfo(next):'برای مشاهده وضعیت، سوابق سرویس‌ها را ثبت کن')+'</span></div><div class="home-insight-card cost"><small><span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle">payments</span> مجموع هزینه ثبت‌شده</small><strong>'+money(total)+'</strong><span>تومان · '+money(costs.length)+' عملیات</span></div>';
+}
+window.renderDashboard=renderDashboardPro;
+var originalRenderServices=window.renderServices;
+if(typeof originalRenderServices==='function'){
+ window.renderServices=function(){originalRenderServices();renderDashboardPro()};
+}
+function pageHead(title,sub){return '<header class="internal-page-head"><button class="page-back" type="button" onclick="showPage(\\'home\\')" aria-label="بازگشت به خانه">‹</button><div class="page-heading"><strong>'+title+'</strong><small>'+sub+'</small></div></header>'}
+function renderCostReportPro(){
+ var target=byId('costReportContent');if(!target)return;
+ var all=allCostRecords(),now=typeof todayJ==='function'?todayJ():[1405,1,1];
+ var years=Array.from(new Set(all.map(function(x){return x.year}))).sort(function(a,b){return b-a});
+ var items=all.filter(function(x){return(reportYear==='all'||String(x.year)===reportYear)&&(reportMonth==='all'||String(x.month)===reportMonth)});
+ var total=items.reduce(function(a,x){return a+x.cost},0),byName={};
+ items.forEach(function(x){byName[x.name]=(byName[x.name]||0)+x.cost});
+ var ranked=Object.keys(byName).map(function(k){return{name:k,total:byName[k]}}).sort(function(a,b){return b.total-a.total});
+ var highest=items.slice().sort(function(a,b){return b.cost-a.cost})[0];
+ var monthNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+ var months=[];
+ for(var i=5;i>=0;i--){var ix=now[0]*12+now[1]-1-i,yy=Math.floor(ix/12),mm=ix%12+1;months.push({y:yy,m:mm,total:all.filter(function(x){return x.year===yy&&x.month===mm}).reduce(function(a,x){return a+x.cost},0)})}
+ var peak=Math.max(1,...months.map(function(x){return x.total}));
+ var chart=months.map(function(x){var h=x.total?Math.max(3,x.total/peak*100):0;return '<div class="report-month"><b>'+(x.total?money(x.total):'—')+'</b><div class="bar" style="height:'+h+'%"></div><small>'+monthNames[x.m-1].slice(0,3)+'</small></div>'}).join('');
+ var yearOptions='<option value="all">همه سال‌ها</option>'+years.map(function(y){return '<option value="'+y+'" '+(reportYear===String(y)?'selected':'')+'>'+y+'</option>'}).join('');
+ var monthOptions='<option value="all">همه ماه‌ها</option>'+monthNames.map(function(m,i){return '<option value="'+(i+1)+'" '+(reportMonth===String(i+1)?'selected':'')+'>'+m+'</option>'}).join('');
+ var escapeText=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+ var topRows=ranked.slice(0,7).map(function(x){return '<div class="report-row"><div class="report-row-head"><b>'+escapeText(x.name)+'</b><span>'+money(x.total)+' تومان</span></div><div class="report-bar"><i style="width:'+(x.total/(ranked[0]?ranked[0].total:1)*100)+'%"></i></div></div>'}).join('');
+ var records=items.slice().sort(function(a,b){return b.year-a.year||b.month-a.month||String(b.date).localeCompare(String(a.date))}).slice(0,15).map(function(x){return '<div class="report-record"><div><b>'+escapeText(x.name)+'</b><small>'+escapeText(x.date)+(x.km?' · '+money(x.km)+' کیلومتر':'')+'</small></div><strong>'+money(x.cost)+' تومان</strong></div>'}).join('');
+ target.innerHTML=pageHead('گزارش هزینه‌ها','نمای کلی و جزئیات مخارج نگهداری خودرو')+
+ '<div class="report-filters"><select id="reportYearFilter" aria-label="فیلتر سال">'+yearOptions+'</select><select id="reportMonthFilter" aria-label="فیلتر ماه">'+monthOptions+'</select></div>'+
+ '<div class="report-summary"><div class="metric"><strong>'+money(total)+'</strong><span>مجموع هزینه‌ها · تومان</span></div><div class="metric"><strong>'+money(items.length)+'</strong><span>تعداد عملیات هزینه‌دار</span></div></div>'+
+ '<section class="report-chart-card"><div class="report-panel-title">روند هزینه ماهانه <small>شش ماه اخیر · تومان</small></div><div class="report-month-chart">'+chart+'</div></section>'+
+ '<section class="report-panel"><div class="report-panel-title">گران‌ترین سرویس ثبت‌شده</div>'+(highest?'<div class="report-best"><div><strong>'+escapeText(highest.name)+'</strong><small>'+escapeText(highest.date)+' · '+(highest.km?money(highest.km)+' کیلومتر':'بدون کیلومتر')+'</small></div><b>'+money(highest.cost)+' تومان</b></div>':'<div class="empty">در این بازه هزینه‌ای ثبت نشده است.</div>')+'</section>'+
+ '<section class="report-panel"><div class="report-panel-title">هزینه به تفکیک سرویس</div>'+(topRows||'<div class="empty">موردی برای نمایش وجود ندارد.</div>')+'</section>'+
+ '<section class="report-panel"><div class="report-panel-title">آخرین هزینه‌ها <small>۱۵ عملیات</small></div>'+(records||'<div class="empty">موردی برای نمایش وجود ندارد.</div>')+'</section>';
+ var yf=byId('reportYearFilter'),mf=byId('reportMonthFilter');
+ if(yf)yf.addEventListener('change',function(){reportYear=this.value;renderCostReportPro()});
+ if(mf)mf.addEventListener('change',function(){reportMonth=this.value;renderCostReportPro()});
+}
+window.renderCostReport=renderCostReportPro;
+window.showCostReport=function(){window.showPage('report')};
+window.focusMainSearch=function(){window.showPage('search')};
+window.openMoreMenu=function(){window.showPage('more')};
+window.showPage=function(page){
+ var ids={home:'homePage',search:'searchPage',history:'historyPage',report:'costReportPage',more:'morePage'};
+ if(!ids[page])page='home';
+ if(page==='more'&&typeof buildMorePage==='function')buildMorePage();
+ Object.keys(ids).forEach(function(key){var el=byId(ids[key]);if(!el)return;var visible=key===page;el.classList.toggle('hidden',!visible);el.setAttribute('aria-hidden',visible?'false':'true');if('inert'in el)el.inert=!visible});
+ document.body.dataset.page=page;
+ ['homeTab','historyTab','reportTab','searchTab','moreTab'].forEach(function(id){var el=byId(id);if(el)el.classList.toggle('active',id===({home:'homeTab',history:'historyTab',report:'reportTab',search:'searchTab',more:'moreTab'}[page]||''))});
+ if(page==='history'&&typeof renderHistory==='function')renderHistory();
+ if(page==='report')renderCostReportPro();
+ if(page==='home'&&typeof renderServices==='function')renderServices();
+ if(page==='search'){if(typeof renderServices==='function')renderServices();var input=byId('search');if(input)setTimeout(function(){input.focus()},120)}
+ if(window.scrollTo)window.scrollTo({top:0,left:0,behavior:'smooth'});
+};
+function initProUI(){renderDashboardPro();var nav=byId('themeTab');if(nav){var i=nav.querySelector('i');if(i)i.textContent=document.body.dataset.theme==='light'?'light_mode':'dark_mode'} }
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initProUI,{once:true});else initProUI();
+})();
+
+</script>
