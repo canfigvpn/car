@@ -1476,14 +1476,14 @@ function renderCostReportPro(){
  var monthOptions='<option value="all">همه ماه‌ها</option>'+monthNames.map(function(m,i){return '<option value="'+(i+1)+'" '+(reportMonth===String(i+1)?'selected':'')+'>'+m+'</option>'}).join('');
  var escapeText=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
  var topRows=ranked.slice(0,7).map(function(x){return '<div class="report-row"><div class="report-row-head"><b>'+escapeText(x.name)+'</b><span>'+money(x.total)+' تومان</span></div><div class="report-bar"><i style="width:'+(x.total/(ranked[0]?ranked[0].total:1)*100)+'%"></i></div></div>'}).join('');
- var records=items.slice().sort(function(a,b){return b.year-a.year||b.month-a.month||String(b.date).localeCompare(String(a.date))}).slice(0,15).map(function(x){return '<div class="report-record"><div><b>'+escapeText(x.name)+'</b><small>'+escapeText(x.date)+(x.km?' · '+money(x.km)+' کیلومتر':'')+'</small></div><strong>'+money(x.cost)+' تومان</strong></div>'}).join('');
+ var records=items.slice().sort(function(a,b){return a.year-b.year||a.month-b.month||String(a.date).localeCompare(String(b.date))||String(a.createdAt||'').localeCompare(String(b.createdAt||''))}).map(function(x){return '<div class="report-record"><div><b>'+escapeText(x.name)+'</b><small>'+escapeText(x.date)+(x.km?' · '+money(x.km)+' کیلومتر':'')+'</small></div><strong>'+money(x.cost)+' تومان</strong></div>'}).join('');
  target.innerHTML=pageHead('گزارش هزینه‌ها','نمای کلی و جزئیات مخارج نگهداری خودرو')+
  '<div class="report-filters"><select id="reportYearFilter" aria-label="فیلتر سال">'+yearOptions+'</select><select id="reportMonthFilter" aria-label="فیلتر ماه">'+monthOptions+'</select></div>'+
  '<div class="report-summary"><div class="metric"><strong>'+money(total)+'</strong><span>مجموع هزینه‌ها · تومان</span></div><div class="metric"><strong>'+money(items.length)+'</strong><span>تعداد عملیات هزینه‌دار</span></div></div>'+
  '<section class="report-chart-card"><div class="report-panel-title">روند هزینه ماهانه <small>شش ماه اخیر · تومان</small></div><div class="report-month-chart">'+chart+'</div></section>'+
  '<section class="report-panel"><div class="report-panel-title">گران‌ترین سرویس ثبت‌شده</div>'+(highest?'<div class="report-best"><div><strong>'+escapeText(highest.name)+'</strong><small>'+escapeText(highest.date)+' · '+(highest.km?money(highest.km)+' کیلومتر':'بدون کیلومتر')+'</small></div><b>'+money(highest.cost)+' تومان</b></div>':'<div class="empty">در این بازه هزینه‌ای ثبت نشده است.</div>')+'</section>'+
  '<section class="report-panel"><div class="report-panel-title">هزینه به تفکیک سرویس</div>'+(topRows||'<div class="empty">موردی برای نمایش وجود ندارد.</div>')+'</section>'+
- '<section class="report-panel"><div class="report-panel-title">آخرین هزینه‌ها <small>۱۵ عملیات</small></div>'+(records||'<div class="empty">موردی برای نمایش وجود ندارد.</div>')+'</section>';
+ '<section class="report-panel"><div class="report-panel-title">تمام هزینه‌های ثبت‌شده <small>از قدیمی‌ترین تا جدیدترین</small></div>'+(records||'<div class="empty">موردی برای نمایش وجود ندارد.</div>')+'</section>';
  var yf=byId('reportYearFilter'),mf=byId('reportMonthFilter');
  if(yf)yf.addEventListener('change',function(){reportYear=this.value;renderCostReportPro()});
  if(mf)mf.addEventListener('change',function(){reportMonth=this.value;renderCostReportPro()});
@@ -1509,4 +1509,114 @@ function initProUI(){renderDashboardPro();var nav=byId('themeTab');if(nav){var i
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initProUI,{once:true});else initProUI();
 })();
 
+</script>
+
+
+<style id="mygarage-ui-refresh-v7">
+/* V7: status outline, modern odometer and full-page service actions */
+#dashboard .metric{border:1.5px solid var(--metric-accent)!important;background:linear-gradient(145deg,#171e26,#10161d)!important;box-shadow:0 5px 18px #0002!important}
+#dashboard .metric:before{display:none!important}
+#dashboard .metric:nth-child(1){--metric-accent:#ef777b}
+#dashboard .metric:nth-child(2){--metric-accent:#e7b768}
+#dashboard .metric:nth-child(3){--metric-accent:#65ce99}
+#dashboard .metric:nth-child(4){--metric-accent:#8293a4}
+.service.green,.service.red,.service.black,.service.soft{background:var(--panel)!important;border:1.5px solid var(--service-edge)!important;border-inline-start-width:1.5px!important}
+.service.green{--service-edge:#65ce99}.service.red{--service-edge:#e7b768}.service.black{--service-edge:#ef777b}.service.soft{--service-edge:#8293a4}
+.service-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+.service-actions .btn{grid-column:auto!important;min-width:0!important;width:100%!important;white-space:nowrap!important}
+.page-back{width:44px;height:44px;flex:0 0 44px;border:1px solid #d7bd8755;border-radius:15px;background:linear-gradient(145deg,#263b4b,#17232e);color:#f0d49b;display:grid;place-items:center;box-shadow:0 6px 18px #0003}
+.page-back svg{width:22px;height:22px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.internal-page-head{display:grid!important;grid-template-columns:1fr auto 1fr!important;align-items:center!important;gap:10px!important}
+.internal-page-head .page-back{grid-column:2;grid-row:1}
+.internal-page-head .page-heading{grid-column:1/-1;grid-row:2;text-align:center}
+.internal-page-head .page-heading strong{display:block}
+.internal-page-head .page-heading small{display:block;margin-top:5px;color:var(--muted);font-size:10px}
+#serviceActionPage{min-height:calc(100dvh - 110px);padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+.action-page-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:8px 2px 15px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.action-page-head .page-back{grid-column:2;grid-row:1}
+.action-page-head .action-page-title{grid-column:1/-1;grid-row:2;text-align:center}
+.action-page-title strong{display:block;font-size:16px}
+.action-page-title small{display:block;margin-top:5px;color:var(--muted);font-size:10px}
+.action-page-panel{border:1px solid var(--line);border-radius:22px;background:var(--panel);overflow:hidden;box-shadow:0 12px 30px #0002}
+.action-page-panel .modal-scroll{max-height:none!important;overflow:visible!important;padding:8px 16px 18px!important}
+.action-page-panel .modal-actions{position:sticky!important;bottom:0!important;background:var(--panel)!important;padding:12px 16px calc(12px + env(safe-area-inset-bottom))!important;border-top:1px solid var(--line)!important}
+.action-page-panel .modal-actions .btn{min-height:48px}
+.action-page-panel .modal-title{display:none!important}
+#serviceActionPage .field{margin:15px 0}
+#serviceActionPage .field label{display:block}
+#serviceActionPage .hint{display:block!important}
+#serviceActionPage .guide{display:block!important}
+.km-card{position:relative!important;isolation:isolate!important;overflow:hidden!important;padding:19px!important;border-radius:25px!important;background:linear-gradient(135deg,#172d3d 0%,#101a25 58%,#1d2c37 100%)!important;border:1px solid #7890a055!important;box-shadow:0 18px 42px #0004,inset 0 1px #ffffff18!important}
+.km-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 12% 90%,#d7bd871c,transparent 35%),radial-gradient(circle at 92% 8%,#65ce9920,transparent 30%);z-index:-1;pointer-events:none}
+.km-head{display:flex!important;align-items:center!important;justify-content:space-between!important;font-size:12px!important;font-weight:800!important;color:#dce6ec!important}
+.km-head span:first-child:before{content:"speed";font-family:"Material Symbols Rounded";font-size:18px;vertical-align:middle;margin-left:7px;color:#d7bd87}
+.km-head span:last-child{padding:5px 10px;border-radius:99px;background:#d7bd8714;border:1px solid #d7bd8740;color:#e8d3a7!important;letter-spacing:1.5px}
+.km-input{position:relative!important;display:flex!important;align-items:center!important;gap:10px!important;margin-top:14px!important;padding:12px 14px!important;min-height:91px!important;border-radius:19px!important;background:linear-gradient(145deg,#090f15,#111c23)!important;border:1px solid #8da2a833!important;box-shadow:inset 0 4px 20px #0008,0 1px #ffffff0d!important}
+.km-input:before{content:"";position:absolute;inset:7px;border:1px solid #ffffff08;border-radius:13px;pointer-events:none}
+.km-input input{position:relative!important;z-index:1!important;flex:1!important;width:100%!important;height:62px!important;padding:0 6px!important;border:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;text-align:center!important;direction:ltr!important;font:900 clamp(35px,9vw,49px)/1 ui-monospace,Consolas,monospace!important;letter-spacing:2px!important;color:#a7edc3!important;text-shadow:0 0 18px #69e6a344!important}
+.km-input span{position:relative;z-index:1;white-space:nowrap;font-size:11px!important;font-weight:800;color:#b6c9c0!important}
+body[data-theme="light"] .km-card{background:linear-gradient(135deg,#e8f0f4,#dbe6ed 58%,#f9fbfc)!important;border-color:#bdccd6!important}
+body[data-theme="light"] .km-head{color:#314957!important}
+body[data-theme="light"] .km-head span:last-child{color:#795b2c!important;background:#d7bd8720;border-color:#d7bd8755}
+body[data-theme="light"] .km-input{background:linear-gradient(145deg,#e5edf1,#f7fafb)!important;border-color:#c0d0d8!important;box-shadow:inset 0 3px 14px #263b4b12!important}
+body[data-theme="light"] .km-input input{color:#18744b!important;text-shadow:none!important}
+body[data-theme="light"] .km-input span{color:#526d60!important}
+body[data-theme="light"] #dashboard .metric{background:#fff!important}
+body[data-theme="light"] .service.green,body[data-theme="light"] .service.red,body[data-theme="light"] .service.black,body[data-theme="light"] .service.soft{background:#fff!important}
+@media(max-width:420px){.service-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}.service-actions .btn{font-size:9px!important;padding:8px 3px!important}.action-page-panel .modal-scroll{padding-inline:12px!important}}
+</style>
+<script id="mygarage-ui-refresh-v7-js">
+(function(){
+'use strict';
+var actionPage=null,baseClose=window.closeModal;
+function byId(id){return document.getElementById(id)}
+function ensurePage(){
+ var p=byId('serviceActionPage');
+ if(!p){p=document.createElement('section');p.id='serviceActionPage';p.className='app-page hidden';p.setAttribute('aria-live','polite');var anchor=byId('costReportPage')||byId('historyPage');anchor.parentNode.insertBefore(p,anchor.nextSibling)}
+ return p;
+}
+function escapeHtml(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function showActionPage(title,subtitle,build){
+ var result=build.apply(null,Array.prototype.slice.call(arguments,3));
+ var modal=byId('modalRoot')&&byId('modalRoot').querySelector('.modal');
+ if(!modal)return result;
+ var scroll=modal.querySelector('.modal-scroll'),actions=modal.querySelector('.modal-actions');
+ var page=ensurePage();
+ page.innerHTML='<header class="action-page-head"><button class="page-back" type="button" aria-label="بازگشت" onclick="showPage(\'home\')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6M9 12h11"/></svg></button><div class="action-page-title"><strong>'+escapeHtml(title)+'</strong><small>'+escapeHtml(subtitle)+'</small></div></header><div class="action-page-panel"><div class="action-page-content"></div></div>';
+ var panel=page.querySelector('.action-page-content');
+ if(scroll)panel.appendChild(scroll);
+ if(actions)page.querySelector('.action-page-panel').appendChild(actions);
+ if(byId('modalRoot'))byId('modalRoot').innerHTML='';
+ document.querySelectorAll('#homePage,#historyPage,#searchPage,#costReportPage,#morePage,#supportPage,#aboutPage').forEach(function(el){el.classList.add('hidden');el.setAttribute('aria-hidden','true')});
+ page.classList.remove('hidden');page.setAttribute('aria-hidden','false');
+ document.body.dataset.page='service-action';
+ ['homeTab','historyTab','reportTab','searchTab','moreTab'].forEach(function(id){var el=byId(id);if(el)el.classList.remove('active')});
+ if(window.scrollTo)window.scrollTo({top:0,left:0,behavior:'instant'});
+ actionPage=true;
+ return result;
+}
+window.closeModal=function(){
+ if(actionPage){actionPage=false;if(byId('serviceActionPage'))byId('serviceActionPage').classList.add('hidden');if(typeof window.showPage==='function')window.showPage('home');return}
+ if(typeof baseClose==='function')return baseClose.apply(this,arguments);
+};
+['recordService','editService','showRecords'].forEach(function(name){
+ var original=window[name];if(typeof original!=='function')return;
+ window[name]=function(id){
+  var s=(typeof state!=='undefined'&&state.services||[]).find(function(x){return x.id===id});
+  if(!s)return;
+  var title=name==='recordService'?'ثبت عملیات':name==='editService'?'تنظیمات سرویس':'سوابق سرویس';
+  var subtitle=s.name+(name==='showRecords'?' · '+(s.records||[]).length+' سابقه':'');
+  return showActionPage(title,subtitle,original,id);
+ };
+});
+var oldShowPage=window.showPage;
+window.showPage=function(page){
+ if(actionPage){actionPage=false;if(byId('serviceActionPage'))byId('serviceActionPage').classList.add('hidden')}
+ if(typeof oldShowPage==='function')oldShowPage(page);
+};
+document.addEventListener('DOMContentLoaded',function(){
+ var backButtons=document.querySelectorAll('.internal-page-head .page-back');
+ backButtons.forEach(function(b){b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6M9 12h11"/></svg>'});
+});
+})();
 </script>
