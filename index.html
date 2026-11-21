@@ -359,7 +359,7 @@ button:focus-visible,.search-box input:focus-visible{outline:2px solid var(--gol
 @media(prefers-reduced-motion:reduce){.page-enter{animation:none!important}.bottom .nav-item,.bottom .nav-item .material-symbols-rounded{transition:none!important}}
 </style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet"><style id="material-symbols-icon-system">.material-symbols-rounded{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;font-feature-settings:"liga";-webkit-font-feature-settings:"liga";-webkit-font-smoothing:antialiased;font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24;flex:0 0 auto}.bottom .nav-item .material-symbols-rounded{font-size:23px}.add-service-button .material-symbols-rounded{font-size:20px}.loader-mark .loader-symbol{position:absolute;inset:9px;width:76px;height:76px;display:grid;place-items:center;font-size:66px;color:#d9bd83;animation:loader-spin 5s linear infinite}@media(max-width:370px){.bottom .nav-item .material-symbols-rounded{font-size:19px}}</style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-mark"><i class="material-symbols-rounded loader-symbol" aria-hidden="true">directions_car</i><span>MG</span></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
 <header class="top"><div><div class="brand">دفترچه سرویس خودرو</div></div><button id="themeButton" hidden></button></header>
-<section id="homePage"><div class="home-toolbar"><div class="search"><div class="search-box"><input id="search" placeholder="جست‌وجوی نام سرویس یا دسته..." oninput="renderServices();toggleSearchClear('search')" autocomplete="off"><button class="search-clear hidden" type="button" aria-label="پاک کردن جست‌وجو" onclick="clearSearch('search')">×</button></div></div></div><div class="km-card"><div class="km-head"><span>کیلومتر فعلی</span><span>KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div></div><div class="dashboard" id="dashboard"></div>
+<section id="homePage"><div class="home-toolbar"><div class="search"><div class="search-box"><input id="search" placeholder="جست‌وجوی نام سرویس یا دسته..." oninput="renderServices();toggleSearchClear('search')" autocomplete="off"><button class="search-clear hidden" type="button" aria-label="پاک کردن جست‌وجو" onclick="clearSearch('search')">×</button></div></div></div><div class="km-card"><div class="km-head"><span>کیلومتر فعلی</span><span>KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div><div class="service-countdown" id="serviceCountdown" aria-live="polite"><span class="countdown-caption">شمارش معکوس سرویس بعدی</span><strong>در حال محاسبه...</strong></div></div><div class="dashboard" id="dashboard"></div>
 <div class="filters"><select id="categoryFilter" onchange="renderServices()"><option value="">همه دسته‌ها</option></select><button class="add-service-button" type="button" onclick="addService()" aria-label="افزودن سرویس جدید"><i class="material-symbols-rounded" aria-hidden="true">add</i><span>افزودن سرویس</span></button></div>
 <div class="legend" aria-label="راهنمای وضعیت سرویس‌ها"><span class="legend-item status-green"><i class="dot" style="background:#238653"></i>به‌روز</span><span class="legend-item status-red"><i class="dot" style="background:#c74747"></i>نزدیک موعد</span><span class="legend-item status-black"><i class="dot" style="background:#20252b"></i>گذشته از موعد</span><span class="legend-item status-soft"><i class="dot" style="background:#687887"></i>ثبت‌نشده یا بدون بازه ثابت</span></div><div id="serviceList"></div></section>
 <section id="historyPage" class="hidden"><div class="section-title">تاریخچه کامل تغییرات <span class="count" id="historyCount"></span></div><div class="hint">تمام ثبت‌ها، ویرایش‌ها، حذف‌ها و تغییر کیلومتر با جزئیات و زمان دقیق نگهداری می‌شوند.</div><div class="history-filter"><button class="btn active" onclick="filterHistory('all',this)">همه</button><button class="btn" onclick="filterHistory('service',this)">سرویس‌ها</button><button class="btn" onclick="filterHistory('settings',this)">تنظیمات</button></div><div id="historyList"></div></section>
@@ -368,13 +368,13 @@ button:focus-visible,.search-box input:focus-visible{outline:2px solid var(--gol
 <div class="support-card"><h3>پشتیبان‌گیری دستی</h3><p>فایل پشتیبان را در حافظه گوشی یا محل دلخواه ذخیره کن و برای بازیابی، همان فایل را انتخاب کن.</p><div class="support-actions"><button class="btn primary" type="button" onclick="exportData()">ذخیره پشتیبان در گوشی</button><button class="btn" type="button" onclick="requestImport()">بازیابی از فایل گوشی</button></div></div>
 <div class="support-card drive-support"><h3>نگهداری پشتیبان در فضای ابری</h3><p>برای نگهداری نسخه پشتیبان در Google Drive یا فضای ابری دیگر، ابتدا فایل JSON را از بخش بالا دریافت و سپس به‌صورت دستی در فضای ابری خود بارگذاری کن. برای بازیابی، فایل را از همان بخش انتخاب کن.</p></div></section>
 <section id="aboutPage" class="app-page hidden"><div class="section-title">درباره خودرو من</div><div class="support-card"><h3>دفترچه سرویس خودرو</h3><p>ثبت کیلومتر، مدیریت سرویس‌ها، سوابق تعمیر و نگهداری، یادآوری موعدها و گزارش هزینه‌ها با ذخیره‌سازی محلی و پشتیبان‌گیری.</p><p class="about-version">نسخه ۳.۷.۰ · نسخه مستقل HTML</p></div></section>
-<nav class="bottom" aria-label="ناوبری اصلی">
-<button id="homeTab" class="nav-item active" type="button" onclick="showPage('home')"><i class="material-symbols-rounded" aria-hidden="true">home</i><span>خانه</span></button>
-<button id="themeTab" class="nav-item" type="button" onclick="toggleTheme()"><i class="material-symbols-rounded" aria-hidden="true">light_mode</i><span id="themeNavLabel">تم روز</span></button>
-<button id="historyTab" class="nav-item" type="button" onclick="showPage('history')"><i class="material-symbols-rounded" aria-hidden="true">history</i><span>تاریخچه</span></button>
-<button id="reportTab" class="nav-item" type="button" onclick="showCostReport()"><i class="material-symbols-rounded" aria-hidden="true">bar_chart</i><span>گزارش هزینه</span></button>
-<button id="supportTab" class="nav-item" type="button" onclick="showPage('support')"><i class="material-symbols-rounded" aria-hidden="true">support_agent</i><span>پشتیبانی</span></button>
-<button id="aboutTab" class="nav-item" type="button" onclick="showPage('about')"><i class="material-symbols-rounded" aria-hidden="true">info</i><span>درباره ما</span></button>
+<nav class="bottom smooth-modern-navbar" aria-label="ناوبری اصلی">
+<button id="homeTab" class="nav-item active" type="button" onclick="showPage('home')" aria-label="خانه"><i class="material-symbols-rounded" aria-hidden="true">home</i><span>خانه</span></button>
+<button id="historyTab" class="nav-item" type="button" onclick="showPage('history')" aria-label="تاریخچه"><i class="material-symbols-rounded" aria-hidden="true">history</i><span>تاریخچه</span></button>
+<button id="reportTab" class="nav-item" type="button" onclick="showCostReport()" aria-label="گزارش هزینه"><i class="material-symbols-rounded" aria-hidden="true">monitoring</i><span>گزارش هزینه</span></button>
+<button id="searchTab" class="nav-item" type="button" onclick="focusMainSearch()" aria-label="جستجو"><i class="material-symbols-rounded" aria-hidden="true">search</i><span>جستجو</span></button>
+<button id="themeTab" class="nav-item" type="button" onclick="toggleTheme()" aria-label="تغییر تم"><i class="material-symbols-rounded" aria-hidden="true">dark_mode</i><span>تم</span></button>
+<button id="moreTab" class="nav-item" type="button" onclick="openMoreMenu()" aria-label="بیشتر" aria-haspopup="dialog"><i class="material-symbols-rounded" aria-hidden="true">more_horiz</i><span>بیشتر</span></button>
 </nav></div>
 </div><div id="modalRoot"></div>
 <script>
@@ -1015,4 +1015,96 @@ window.addEventListener('unhandledrejection',function(){
 })();
 </script>
 
+<style id="mygarage-smooth-modern-navbar-v1">
+/* SMOOTH MODERN NAVBAR */
+body{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+.smooth-modern-navbar.bottom{position:fixed!important;z-index:50!important;left:50%!important;right:auto!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;width:min(calc(100% - 22px),690px)!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:4px!important;margin:0!important;padding:7px!important;border:1px solid color-mix(in srgb,var(--line) 85%,transparent)!important;border-radius:23px!important;background:color-mix(in srgb,var(--panel) 88%,transparent)!important;box-shadow:0 13px 38px #0005,0 2px 8px #0002!important;backdrop-filter:blur(24px) saturate(1.45)!important;-webkit-backdrop-filter:blur(24px) saturate(1.45)!important}
+.smooth-modern-navbar:before{display:none!important}
+.smooth-modern-navbar .nav-item{min-width:0!important;height:58px!important;padding:5px 2px!important;border:0!important;border-radius:16px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;background:transparent!important;color:var(--muted)!important;font-size:clamp(9px,2.5vw,10px)!important;font-weight:700!important;transition:background .22s ease,color .22s ease,transform .22s ease!important}
+.smooth-modern-navbar .nav-item .material-symbols-rounded{width:23px;height:23px;font-size:23px;line-height:1;display:block;font-variation-settings:'FILL' 0,'wght' 450,'GRAD' 0,'opsz' 24}
+.smooth-modern-navbar .nav-item.active{background:color-mix(in srgb,var(--gold) 17%,transparent)!important;color:var(--gold)!important}
+.smooth-modern-navbar .nav-item:active{transform:scale(.92)!important}
+body[data-theme="light"] .smooth-modern-navbar.bottom{background:#ffffffdf!important;border-color:#d9e1e7!important;box-shadow:0 13px 35px #17232d20!important}
+body[data-theme="light"] .smooth-modern-navbar .nav-item.active{color:#8b641f!important;background:#d7bd8726!important}
+.service-countdown{position:relative;z-index:1;display:flex;flex-direction:column;gap:5px;margin-top:13px;padding:11px 13px;border:1px solid #ffffff1c;border-radius:14px;background:#07120f55;backdrop-filter:blur(8px)}
+.countdown-caption{font-size:10px;color:#b8c9c6}
+.service-countdown strong{font-size:12px;line-height:1.9;color:#e5d2a8;font-weight:800}
+.service-countdown .countdown-detail{font-size:10px;line-height:1.8;color:#a9c0b8}
+body[data-theme="light"] .service-countdown{background:#e7f0eb;border-color:#c6d9cd}
+body[data-theme="light"] .countdown-caption{color:#536b60}
+body[data-theme="light"] .service-countdown strong{color:#76551d}
+body[data-theme="light"] .service-countdown .countdown-detail{color:#466457}
+.more-menu-backdrop{position:fixed;inset:0;z-index:10010;display:flex;align-items:flex-end;justify-content:center;padding:12px;background:#02070bb8;backdrop-filter:blur(7px)}
+.more-menu-panel{width:min(100%,520px);padding:18px 16px calc(17px + env(safe-area-inset-bottom));border:1px solid var(--line);border-radius:25px;background:var(--panel);box-shadow:0 20px 70px #0008;animation:moreSheetIn .22s ease-out}
+.more-menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.more-menu-head strong{font-size:15px}
+.more-menu-close{width:36px;height:36px;border:0;border-radius:12px;background:var(--panel2);color:var(--text);font-size:20px}
+.more-menu-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.more-menu-action{min-height:70px;display:flex;align-items:center;gap:11px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);color:var(--text);text-align:right;font:inherit;font-size:12px;font-weight:700}
+.more-menu-action .material-symbols-rounded{font-size:24px;color:var(--gold)}
+@keyframes moreSheetIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:360px){.smooth-modern-navbar.bottom{width:calc(100% - 14px)!important;gap:1px!important;padding:5px!important}.smooth-modern-navbar .nav-item{height:55px!important;font-size:8px!important}.smooth-modern-navbar .nav-item .material-symbols-rounded{font-size:21px}.service-countdown strong{font-size:11px}}
+</style>
+<script id="mygarage-smooth-modern-navbar-v1">
+(function(){
+'use strict';
+var pageIds={home:'homePage',history:'historyPage',report:'costReportPage',support:'supportPage',about:'aboutPage'};
+var pages=Object.keys(pageIds);
+function setActive(page){
+ ['homeTab','historyTab','reportTab','searchTab','themeTab','moreTab'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('active')});
+ var id=page==='home'?'homeTab':page==='history'?'historyTab':page==='report'?'reportTab':(page==='support'||page==='about')?'moreTab':'';
+ var active=id&&document.getElementById(id);if(active)active.classList.add('active');
+}
+window.showPage=function(page){
+ if(!pageIds[page])page='home';
+ pages.forEach(function(name){var el=document.getElementById(pageIds[name]);if(!el)return;var visible=name===page;el.classList.toggle('hidden',!visible);el.setAttribute('aria-hidden',visible?'false':'true');if('inert' in el)el.inert=!visible;el.classList.remove('page-enter');if(visible){void el.offsetWidth;el.classList.add('page-enter')}});
+ document.body.dataset.page=page;setActive(page);
+ if(page==='history'&&typeof window.renderHistory==='function')window.renderHistory();
+ if(page==='report'&&typeof window.renderCostReport==='function')window.renderCostReport();
+ if(page==='home'&&window.toggleSearchClear)window.toggleSearchClear('search');
+ if(window.scrollTo)window.scrollTo({top:0,left:0,behavior:'smooth'});
+};
+window.showCostReport=function(){window.showPage('report')};
+window.focusMainSearch=function(){window.showPage('home');var input=document.getElementById('search');if(input){setTimeout(function(){input.focus();try{input.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}},80)}};
+window.openMoreMenu=function(){
+ if(document.getElementById('moreMenuBackdrop'))return;
+ var wrap=document.createElement('div');wrap.id='moreMenuBackdrop';wrap.className='more-menu-backdrop';wrap.setAttribute('role','presentation');
+ wrap.innerHTML='<section class="more-menu-panel" role="dialog" aria-modal="true" aria-labelledby="moreMenuTitle"><div class="more-menu-head"><strong id="moreMenuTitle">بیشتر</strong><button class="more-menu-close" type="button" aria-label="بستن" onclick="closeMoreMenu()">×</button></div><div class="more-menu-actions"><button class="more-menu-action" type="button" onclick="closeMoreMenu();showPage(\'about\')"><i class="material-symbols-rounded" aria-hidden="true">info</i><span>درباره من</span></button><button class="more-menu-action" type="button" onclick="closeMoreMenu();showPage(\'support\')"><i class="material-symbols-rounded" aria-hidden="true">backup</i><span>پشتیبان‌گیری</span></button></div></section>';
+ wrap.addEventListener('click',function(e){if(e.target===wrap)window.closeMoreMenu()});document.body.appendChild(wrap);
+ var close=wrap.querySelector('.more-menu-close');if(close)close.focus();
+};
+window.closeMoreMenu=function(){var el=document.getElementById('moreMenuBackdrop');if(el)el.remove()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')window.closeMoreMenu()});
+var originalToggleTheme=window.toggleTheme;
+window.toggleTheme=function(){if(typeof originalToggleTheme==='function')originalToggleTheme();var icon=document.querySelector('#themeTab .material-symbols-rounded');if(icon)icon.textContent=document.body.dataset.theme==='light'?'light_mode':'dark_mode';setActive(document.body.dataset.page||'home')};
+function updateServiceCountdown(){
+ var target=document.getElementById('serviceCountdown');if(!target||typeof state==='undefined'||!state||!Array.isArray(state.services))return;
+ var today=typeof todayJ==='function'?todayJ():null;if(!today)return;
+ var nowOrdinal=typeof dateOrdinal==='function'?dateOrdinal(parseJ(today.join('/'))):0,candidates=[];
+ state.services.forEach(function(service){
+  if(!service||service.enabled===false||!Array.isArray(service.records))return;
+  var records=service.records.filter(function(record){return record&&record.affectsDue!==false});if(!records.length)return;
+  records.sort(function(a,b){return dateOrdinal(parseJ(a.date))-dateOrdinal(parseJ(b.date))||Number(a.km)-Number(b.km)||String(a.createdAt||'').localeCompare(String(b.createdAt||''))});
+  var last=records[records.length-1],kmLeft=service.ikm>0?Number(last.km)+Number(service.ikm)-Number(state.km):null;
+  var dueDate=service.days>0&&typeof addJalaliDays==='function'?addJalaliDays(last.date,Number(service.days)):null;
+  var daysLeft=dueDate?dateOrdinal(parseJ(dueDate))-nowOrdinal:null;
+  if(kmLeft===null&&daysLeft===null)return;
+  var kmRatio=kmLeft===null?Infinity:kmLeft/Math.max(1,Number(service.ikm)),dayRatio=daysLeft===null?Infinity:daysLeft/Math.max(1,Number(service.days));
+  candidates.push({name:service.name,kmLeft:kmLeft,daysLeft:daysLeft,dueDate:dueDate,priority:Math.min(kmRatio,dayRatio)});
+ });
+ candidates.sort(function(a,b){return a.priority-b.priority});var item=candidates[0];
+ if(!item){target.innerHTML='<span class="countdown-caption">شمارش معکوس سرویس بعدی</span><strong>برای سرویس‌ها هنوز سابقه‌ای ثبت نشده است</strong><span class="countdown-detail">پس از ثبت اولین عملیات، زمان و کیلومتر باقی‌مانده نمایش داده می‌شود.</span>';return}
+ var overdue=(item.kmLeft!==null&&item.kmLeft<=0)||(item.daysLeft!==null&&item.daysLeft<=0),parts=[];
+ if(item.kmLeft!==null)parts.push(Math.abs(item.kmLeft).toLocaleString('en-US')+' کیلومتر '+(item.kmLeft>=0?'باقی‌مانده':'تأخیر'));
+ if(item.daysLeft!==null)parts.push(Math.abs(item.daysLeft).toLocaleString('en-US')+' روز '+(item.daysLeft>=0?'باقی‌مانده':'تأخیر'));
+ var safeName=String(item.name).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]});
+ target.innerHTML='<span class="countdown-caption">'+(overdue?'سررسید سرویس گذشته است':'شمارش معکوس تا سرویس بعدی')+'</span><strong>'+safeName+'</strong><span class="countdown-detail">'+parts.join('  ·  ')+(item.dueDate?'  ·  موعد: '+item.dueDate:'')+'</span>';
+}
+window.updateServiceCountdown=updateServiceCountdown;
+var previousRender=window.renderServices;if(typeof previousRender==='function')window.renderServices=function(){var result=previousRender.apply(this,arguments);updateServiceCountdown();return result};
+var previousSetKm=window.setKm;if(typeof previousSetKm==='function')window.setKm=function(){var result=previousSetKm.apply(this,arguments);updateServiceCountdown();return result};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setActive(document.body.dataset.page||'home');updateServiceCountdown()},{once:true});else{setActive(document.body.dataset.page||'home');updateServiceCountdown()}
+setInterval(updateServiceCountdown,60000);
+})();
+</script>
 </body></html>
