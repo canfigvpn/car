@@ -1067,13 +1067,13 @@ window.showPage=function(page){
 window.showCostReport=function(){window.showPage('report')};
 window.focusMainSearch=function(){window.showPage('home');var input=document.getElementById('search');if(input){setTimeout(function(){input.focus();try{input.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}},80)}};
 window.openMoreMenu=function(){
- if(document.getElementById('moreMenuBackdrop'))return;
+ if(document.getElementById('moreMenuBackdrop'))return;setActive('support');
  var wrap=document.createElement('div');wrap.id='moreMenuBackdrop';wrap.className='more-menu-backdrop';wrap.setAttribute('role','presentation');
  wrap.innerHTML='<section class="more-menu-panel" role="dialog" aria-modal="true" aria-labelledby="moreMenuTitle"><div class="more-menu-head"><strong id="moreMenuTitle">بیشتر</strong><button class="more-menu-close" type="button" aria-label="بستن" onclick="closeMoreMenu()">×</button></div><div class="more-menu-actions"><button class="more-menu-action" type="button" onclick="closeMoreMenu();showPage(\'about\')"><i class="material-symbols-rounded" aria-hidden="true">info</i><span>درباره من</span></button><button class="more-menu-action" type="button" onclick="closeMoreMenu();showPage(\'support\')"><i class="material-symbols-rounded" aria-hidden="true">backup</i><span>پشتیبان‌گیری</span></button></div></section>';
  wrap.addEventListener('click',function(e){if(e.target===wrap)window.closeMoreMenu()});document.body.appendChild(wrap);
  var close=wrap.querySelector('.more-menu-close');if(close)close.focus();
 };
-window.closeMoreMenu=function(){var el=document.getElementById('moreMenuBackdrop');if(el)el.remove()};
+window.closeMoreMenu=function(){var el=document.getElementById('moreMenuBackdrop');if(el)el.remove();var page=document.body.dataset.page||'home';setActive(page)};
 document.addEventListener('keydown',function(e){if(e.key==='Escape')window.closeMoreMenu()});
 var originalToggleTheme=window.toggleTheme;
 window.toggleTheme=function(){if(typeof originalToggleTheme==='function')originalToggleTheme();var icon=document.querySelector('#themeTab .material-symbols-rounded');if(icon)icon.textContent=document.body.dataset.theme==='light'?'light_mode':'dark_mode';setActive(document.body.dataset.page||'home')};
