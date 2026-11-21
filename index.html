@@ -800,4 +800,226 @@ document.addEventListener('input',function(event){if(event.target&&event.target.
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setIcons,{once:true});else setIcons();
 activePage=document.body.dataset.page||'home';if(window.toggleSearchClear)window.toggleSearchClear('search');
 })();
-</script></body></html>
+</script>
+<style id="mygarage-final-hardening-v2-css">
+/* Final reliability and accessibility layer */
+:root{scroll-behavior:smooth}
+html{scroll-padding-top:calc(env(safe-area-inset-top) + 12px)}
+body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+button,input,textarea,select{font:inherit}
+button{touch-action:manipulation}
+button:focus-visible,[role="button"]:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold,#d7bd87)!important;outline-offset:3px}
+[aria-hidden="true"]{pointer-events:none}
+.modal-back{overscroll-behavior:contain}
+.modal{overscroll-behavior:contain}
+.toast{padding-bottom:max(13px,env(safe-area-inset-bottom));z-index:10001}
+#startupLoader{transition:opacity .18s ease,visibility .18s ease}
+.loader-track i{animation-duration:.45s}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+<script id="mygarage-final-hardening-v2">
+(function(){
+'use strict';
+var STORAGE_DB='mygarage-reliable-storage-v1';
+var STORAGE_STORE='snapshots';
+var STORAGE_KEY='latest';
+var localKey=typeof KEY!=='undefined'?KEY:'mygarage_v3';
+var legacyKey=typeof LEGACY_KEY!=='undefined'?LEGACY_KEY:'mygarage_v2';
+var writeVersion=0,dbPromise=null,modalReturnFocus=null;
+function openDB(){
+ if(!('indexedDB' in window))return Promise.resolve(null);
+ if(dbPromise)return dbPromise;
+ dbPromise=new Promise(function(resolve){
+  var request;
+  try{request=indexedDB.open(STORAGE_DB,1)}catch(e){resolve(null);return}
+  request.onupgradeneeded=function(){var db=request.result;if(!db.objectStoreNames.contains(STORAGE_STORE))db.createObjectStore(STORAGE_STORE)};
+  request.onsuccess=function(){resolve(request.result)};
+  request.onerror=function(){resolve(null)};
+  request.onblocked=function(){resolve(null)};
+ });
+ return dbPromise;
+}
+function idbWrite(snapshot){
+ return openDB().then(function(db){
+  if(!db)return false;
+  return new Promise(function(resolve){
+   try{
+    var tx=db.transaction(STORAGE_STORE,'readwrite');
+    tx.objectStore(STORAGE_STORE).put({savedAt:new Date().toISOString(),data:snapshot},STORAGE_KEY);
+    tx.oncomplete=function(){resolve(true)};
+    tx.onerror=function(){resolve(false)};
+    tx.onabort=function(){resolve(false)};
+   }catch(e){resolve(false)}
+  });
+ });
+}
+function idbRead(){
+ return openDB().then(function(db){
+  if(!db)return null;
+  return new Promise(function(resolve){
+   try{
+    var req=db.transaction(STORAGE_STORE,'readonly').objectStore(STORAGE_STORE).get(STORAGE_KEY);
+    req.onsuccess=function(){resolve(req.result&&req.result.data||null)};
+    req.onerror=function(){resolve(null)};
+   }catch(e){resolve(null)}
+  });
+ });
+}
+/* localStorage remains the synchronous source of truth for compatibility;
+   IndexedDB keeps an independent recovery copy after every successful save. */
+if(typeof window.save==='function'){
+ var originalSave=window.save;
+ window.save=function(){
+  var ok=false;
+  try{ok=originalSave.apply(this,arguments)}catch(e){ok=false}
+  if(ok){
+   writeVersion++;
+   try{idbWrite(JSON.parse(JSON.stringify(state)))}catch(e){}
+  }
+  return ok;
+ };
+}
+/* Recover the secondary copy only when both legacy and current local data are absent.
+   A user edit made while IndexedDB is opening always wins. */
+function recoverIfNeeded(){
+ var hasLocal=false;
+ try{hasLocal=!!(localStorage.getItem(localKey)||localStorage.getItem(legacyKey))}catch(e){hasLocal=true}
+ if(hasLocal)return;
+ var versionAtStart=writeVersion;
+ idbRead().then(function(data){
+  if(!data||writeVersion!==versionAtStart)return;
+  try{
+   if(!data||!Array.isArray(data.services)||!Array.isArray(data.logs))return;
+   if(typeof normalizeService!=='function'||typeof safeNumber!=='function')return;
+   var restored={version:3,km:safeNumber(data.km)||0,services:data.services.map(normalizeService).filter(Boolean),logs:data.logs.filter(function(x){return x&&typeof x==='object'}).slice(0,5000)};
+   if(!restored.services.length)return;
+   state=restored;
+   try{localStorage.setItem(localKey,JSON.stringify(state))}catch(e){}
+   if(typeof fillCategories==='function')fillCategories();
+   if(typeof renderServices==='function')renderServices();
+   if(typeof renderHistory==='function')renderHistory();
+   if(typeof renderCostReport==='function')renderCostReport();
+   if(typeof toast==='function')toast('نسخه پشتیبان محلی بازیابی شد.');
+  }catch(e){}
+ });
+}
+if(document.readyState==='complete')setTimeout(recoverIfNeeded,0);
+else window.addEventListener('load',recoverIfNeeded,{once:true});
+
+/* Exact reminder thresholds: 5,000 km or 15 days; overdue is black. */
+window.status=function(service){
+ if(!service||!Array.isArray(service.records))return 'soft';
+ var record=typeof latest==='function'?latest({records:service.records.filter(function(x){return x&&x.affectsDue!==false})}):null;
+ if(!record)return 'soft';
+ var intervalKm=Number(service.ikm)||0,intervalDays=Number(service.days)||0;
+ if(intervalKm<=0&&intervalDays<=0)return 'soft';
+ var kmDue=intervalKm>0?Number(record.km)+intervalKm:null;
+ var dateDue=intervalDays>0&&typeof addJalaliDays==='function'?addJalaliDays(record.date,intervalDays):null;
+ var today=typeof todayJ==='function'?parseJ(todayJ().join('/')):null;
+ var daysLeft=dateDue&&today?dateOrdinal(parseJ(dateDue))-dateOrdinal(today):Infinity;
+ var kmLeft=kmDue===null?Infinity:kmDue-(Number(state.km)||0);
+ if((kmDue!==null&&kmLeft<=0)||(dateDue&&daysLeft<=0))return 'black';
+ if((kmDue!==null&&kmLeft<=5000)||(dateDue&&daysLeft<=15))return 'red';
+ return 'green';
+};
+
+/* Remove the artificial 3.5-second startup wait; the app is usable as soon as it renders. */
+function dismissLoader(){
+ var loader=document.getElementById('startupLoader');
+ if(!loader)return;
+ loader.classList.add('is-hidden');
+ setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},220);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',dismissLoader,{once:true});
+else dismissLoader();
+
+/* Add accessible names without changing visible text or existing controls. */
+function improveAccessibility(root){
+ root=root||document;
+ root.querySelectorAll('button').forEach(function(button){
+  if(!button.hasAttribute('aria-label')&&!button.textContent.trim()){
+   var title=button.getAttribute('title')||button.dataset.tooltip;
+   if(title)button.setAttribute('aria-label',title);
+  }
+  if(!button.hasAttribute('type'))button.setAttribute('type','button');
+ });
+ root.querySelectorAll('input,textarea,select').forEach(function(input){
+  if(input.type==='hidden'||input.hasAttribute('aria-label')||input.labels&&input.labels.length)return;
+  var label=input.closest('.field');
+  var text=label&&label.querySelector('label');
+  if(text&&text.textContent.trim())input.setAttribute('aria-label',text.textContent.trim());
+  else if(input.placeholder)input.setAttribute('aria-label',input.placeholder);
+  else if(input.id)input.setAttribute('aria-label',input.id);
+ });
+ root.querySelectorAll('[role="dialog"]').forEach(function(dialog){
+  dialog.setAttribute('aria-modal','true');
+  if(!dialog.hasAttribute('aria-label')&&!dialog.hasAttribute('aria-labelledby')){
+   var heading=dialog.querySelector('h1,h2,h3,[data-dialog-title]');
+   if(heading){if(!heading.id)heading.id='dialog-heading-'+Date.now();dialog.setAttribute('aria-labelledby',heading.id)}
+  }
+ });
+}
+improveAccessibility(document);
+var observer;
+if('MutationObserver' in window){
+ observer=new MutationObserver(function(records){
+  records.forEach(function(record){record.addedNodes&&record.addedNodes.forEach(function(node){if(node.nodeType===1)improveAccessibility(node)})});
+ });
+ observer.observe(document.documentElement,{childList:true,subtree:true});
+}
+
+/* Keep keyboard focus inside dialogs and return it to the opener on close. */
+if(typeof window.modal==='function'){
+ var originalModal=window.modal;
+ window.modal=function(){
+  modalReturnFocus=document.activeElement;
+  var result=originalModal.apply(this,arguments);
+  var dialog=document.querySelector('#modalRoot [role="dialog"]');
+  if(dialog){
+   dialog.setAttribute('tabindex','-1');
+   var focusable=dialog.querySelector('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])');
+   setTimeout(function(){(focusable||dialog).focus()},0);
+  }
+  return result;
+ };
+}
+if(typeof window.closeModal==='function'){
+ var originalCloseModal=window.closeModal;
+ window.closeModal=function(){
+  var result=originalCloseModal.apply(this,arguments);
+  if(modalReturnFocus&&document.contains(modalReturnFocus)){
+   try{modalReturnFocus.focus()}catch(e){}
+  }
+  modalReturnFocus=null;
+  return result;
+ };
+}
+document.addEventListener('keydown',function(event){
+ var dialog=document.querySelector('#modalRoot [role="dialog"]');
+ if(!dialog||event.key!=='Tab')return;
+ var nodes=Array.prototype.slice.call(dialog.querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])')).filter(function(el){return el.offsetParent!==null});
+ if(!nodes.length){event.preventDefault();dialog.focus();return}
+ var first=nodes[0],last=nodes[nodes.length-1];
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+ else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+});
+
+/* Prevent repeated rapid submission of the same modal action. */
+document.addEventListener('click',function(event){
+ var button=event.target&&event.target.closest&&event.target.closest('#modalSave');
+ if(!button||button.disabled)return;
+ button.disabled=true;
+ setTimeout(function(){if(document.contains(button))button.disabled=false},700);
+},true);
+
+/* Surface unexpected runtime failures in a recoverable, non-blocking way. */
+window.addEventListener('error',function(event){
+ try{if(typeof toast==='function'&&event&&event.message)toast('یک خطای غیرمنتظره رخ داد. صفحه را دوباره باز کن؛ اطلاعات ذخیره‌شده حفظ می‌شود.')}catch(e){}
+});
+window.addEventListener('unhandledrejection',function(){
+ try{if(typeof toast==='function')toast('یک عملیات کامل نشد. اتصال یا فضای ذخیره‌سازی را بررسی کن.')}catch(e){}
+});
+})();
+</script>
+
+</body></html>
