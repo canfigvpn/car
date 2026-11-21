@@ -342,7 +342,22 @@ button:active,.btn:active,.nav-item:active{transform:scale(.965)}
 @keyframes loader-progress{0%{transform:translateX(-150%)}100%{transform:translateX(260%)}}
 @media(max-width:420px){.home-toolbar{top:calc(env(safe-area-inset-top) + 9px)!important;padding:8px 0 10px!important}.modal-title{padding:15px 14px 12px!important}.modal-scroll{padding:4px 14px 10px!important}.modal-actions{padding:10px 12px calc(10px + env(safe-area-inset-bottom))!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-</style><style id="standalone-web-adjustments">@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}</style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><path d="M12 42 22 18l10 24 10-24 10 24"/></svg><span>MG</span></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
+</style><style id="standalone-web-adjustments">@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}</style><style id="mygarage-interaction-polish-v1">
+.search-box{position:relative!important;isolation:isolate}
+.search-box:before{content:"";position:absolute;z-index:2;right:15px;top:50%;width:19px;height:19px;transform:translateY(-50%);pointer-events:none;background:currentColor;opacity:.62;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10.8' cy='10.8' r='6.8'/%3E%3Cpath d='m16 16 5 5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10.8' cy='10.8' r='6.8'/%3E%3Cpath d='m16 16 5 5'/%3E%3C/svg%3E") center/contain no-repeat}
+.home-toolbar .search-box input{padding-right:45px!important;padding-left:44px!important}
+.search-box .search-clear{z-index:3;display:grid;place-items:center;width:30px;height:30px;min-height:30px;padding:0;border-radius:50%;line-height:1}
+.search-box .search-clear.hidden{display:none!important}
+#homePage,#historyPage,#costReportPage,#supportPage,#aboutPage{backface-visibility:hidden}
+.page-enter{animation:mygarage-page-enter .22s cubic-bezier(.2,.7,.25,1) both!important}
+@keyframes mygarage-page-enter{from{opacity:.72;transform:translate3d(0,7px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+.service,.history-item,.support-card,.metric{animation:none!important;will-change:auto!important}
+.bottom .nav-item{transition:color .16s ease,background-color .16s ease,box-shadow .16s ease!important;transform:translateZ(0)}
+.bottom .nav-item svg{transition:transform .16s ease,opacity .16s ease!important}
+.bottom .nav-item.active svg{transform:translateY(-1px) scale(1.06)}
+button:focus-visible,.search-box input:focus-visible{outline:2px solid var(--gold)!important;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.page-enter{animation:none!important}.bottom .nav-item,.bottom .nav-item svg{transition:none!important}}
+</style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><path d="M12 42 22 18l10 24 10-24 10 24"/></svg><span>MG</span></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
 <header class="top"><div><div class="brand">دفترچه سرویس خودرو</div></div><button id="themeButton" hidden></button></header>
 <section id="homePage"><div class="home-toolbar"><div class="search"><div class="search-box"><input id="search" placeholder="جست‌وجوی نام سرویس یا دسته..." oninput="renderServices();toggleSearchClear('search')" autocomplete="off"><button class="search-clear hidden" type="button" aria-label="پاک کردن جست‌وجو" onclick="clearSearch('search')">×</button></div></div></div><div class="km-card"><div class="km-head"><span>کیلومتر فعلی</span><span>KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div></div><div class="dashboard" id="dashboard"></div>
 <div class="filters"><select id="categoryFilter" onchange="renderServices()"><option value="">همه دسته‌ها</option></select><button class="add-service-button" type="button" onclick="addService()" aria-label="افزودن سرویس جدید"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>افزودن سرویس</span></button></div>
@@ -723,4 +738,66 @@ function toggleTheme(){
 }
 
 </script>
-</body></html>
+<script id="mygarage-interaction-controller-v1">
+(function(){
+'use strict';
+var pages=['home','history','report','support','about'];
+var pageIds={home:'homePage',history:'historyPage',report:'costReportPage',support:'supportPage',about:'aboutPage'};
+var tabIds={home:'homeTab',history:'historyTab',report:'reportTab',support:'supportTab',about:'aboutTab'};
+var activePage='';
+var paths={
+home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',
+history:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+report:'<path d="M4 19V5m0 14h16"/><rect x="7" y="11" width="3" height="5" rx="1"/><rect x="13" y="7" width="3" height="9" rx="1"/><path d="m7 8 4-3 3 2 5-4"/>',
+support:'<path d="M4 13v-2a8 8 0 0 1 16 0v2"/><path d="M4 13h3v6H6a2 2 0 0 1-2-2zm16 0h-3v6h1a2 2 0 0 0 2-2z"/><path d="M17 20c-1 1-2.5 1.5-5 1.5"/>',
+about:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/>',
+theme:'<path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/>'
+};
+function setIcons(){
+Object.keys(tabIds).forEach(function(key){
+var button=document.getElementById(tabIds[key]);if(!button)return;
+var svg=button.querySelector('svg');
+if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');button.insertBefore(svg,button.firstChild)}
+svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');svg.innerHTML=paths[key];
+});
+var theme=document.getElementById('themeTab'),svg=theme&&theme.querySelector('svg');
+if(svg){svg.setAttribute('viewBox','0 0 24 24');svg.innerHTML=paths.theme;svg.setAttribute('aria-hidden','true')}
+}
+window.showPage=function(next){
+var p=pages.indexOf(next)>=0?next:'home',same=p===activePage;activePage=p;document.body.dataset.page=p;
+pages.forEach(function(name){
+var el=document.getElementById(pageIds[name]);if(!el)return;
+var visible=name===p;el.classList.remove('page-enter');el.classList.toggle('hidden',!visible);
+el.setAttribute('aria-hidden',visible?'false':'true');if('inert' in el)el.inert=!visible;
+if(visible&&!same){void el.offsetWidth;el.classList.add('page-enter');var finish=function(){el.classList.remove('page-enter')};el.addEventListener('animationend',finish,{once:true})}
+});
+pages.forEach(function(name){var tab=document.getElementById(tabIds[name]);if(tab){tab.classList.toggle('active',name===p);tab.setAttribute('aria-current',name===p?'page':'false')}});
+if(p==='history'&&typeof window.renderHistory==='function')window.renderHistory();
+if(p==='report'&&typeof window.renderCostReport==='function')window.renderCostReport();
+if(p==='home'&&window.toggleSearchClear)window.toggleSearchClear('search');
+if(!same&&window.scrollTo)window.scrollTo({top:0,left:0,behavior:'auto'});
+};
+window.showCostReport=function(){window.showPage('report')};
+window.toggleSearchClear=function(id){
+var input=document.getElementById(id);if(!input)return;
+var box=input.closest('.search-box')||input.parentElement,button=box&&box.querySelector('.search-clear');
+if(button)button.classList.toggle('hidden',!String(input.value||'').length);
+};
+window.clearSearch=function(id){
+var input=document.getElementById(id);if(!input)return;input.value='';window.toggleSearchClear(id);
+if(id==='search'&&typeof window.renderServices==='function')window.renderServices();
+else if(typeof window.renderHistory==='function'){window.historyQuery='';window.renderHistory()}
+input.focus();
+};
+document.addEventListener('keydown',function(event){
+if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){
+var input=document.getElementById('search');if(input&&document.body.dataset.page!=='home')window.showPage('home');
+if(input){event.preventDefault();input.focus()}
+}
+if(event.key==='Escape'){var input=document.getElementById('search');if(input&&document.activeElement===input&&input.value){input.value='';window.toggleSearchClear('search');if(typeof window.renderServices==='function')window.renderServices()}}
+});
+document.addEventListener('input',function(event){if(event.target&&event.target.id==='search')window.toggleSearchClear('search')});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setIcons,{once:true});else setIcons();
+activePage=document.body.dataset.page||'home';if(window.toggleSearchClear)window.toggleSearchClear('search');
+})();
+</script></body></html>
