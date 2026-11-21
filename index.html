@@ -1430,7 +1430,7 @@ function byId(id){return document.getElementById(id)}
 function money(n){return typeof fmtNum==='function'?fmtNum(Math.round(Number(n)||0)):String(Math.round(Number(n)||0))}
 function allCostRecords(){
  var out=[];
- if(!window.state||!Array.isArray(state.services))return out;
+ if(typeof state==='undefined'||!Array.isArray(state.services))return out;
  state.services.forEach(function(s){(s.records||[]).forEach(function(r){
   var n=typeof safeNumber==='function'?safeNumber(r.cost):Number(r.cost);
   var p=typeof parseJ==='function'?parseJ(r.date):null;
@@ -1439,7 +1439,7 @@ function allCostRecords(){
  return out;
 }
 function renderDashboardPro(){
- var target=byId('dashboard');if(!target||!window.state)return;
+ var target=byId('dashboard');if(!target||typeof state==='undefined')return;
  var counts={black:0,red:0,green:0,soft:0};
  (state.services||[]).filter(function(s){return s.enabled!==false}).forEach(function(s){var st=status(s);counts[st]=(counts[st]||0)+1});
  target.innerHTML=[
