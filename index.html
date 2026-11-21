@@ -544,4 +544,183 @@ function updateThemeLabel(){var label=document.getElementById('themeNavLabel'),t
 function toggleTheme(){var theme=document.body.dataset.theme==='light'?'dark':'light';document.body.dataset.theme=theme;try{localStorage.setItem('mygarage_theme',theme)}catch(e){}updateThemeLabel()}
 </script><script id="mygarage-v37-effects">
 (function(){const loader=document.getElementById('startupLoader');if(loader){setTimeout(function(){loader.classList.add('is-hidden');setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},500)},3500)}function normalizeAppIcons(){document.querySelectorAll('svg').forEach(function(svg){if(!svg.getAttribute('viewBox'))svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('focusable','false');if(!svg.hasAttribute('aria-hidden'))svg.setAttribute('aria-hidden','true');svg.setAttribute('preserveAspectRatio','xMidYMid meet')})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalizeAppIcons,{once:true});else normalizeAppIcons()})();
-</script><script id="mygarage-storage-persistence">(function(){if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}})();</script></body></html>
+</script><script id="mygarage-storage-persistence">(function(){if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}})();</script>
+<script id="mygarage-professional-reliability-v1">
+/* Reliability, validation, accessibility and persistence hardening. */
+(function(){
+  var viewport=document.querySelector('meta[name="viewport"]');
+  if(viewport)viewport.setAttribute('content','width=device-width,initial-scale=1,viewport-fit=cover');
+  try{
+    if(navigator.storage&&navigator.storage.persist){
+      navigator.storage.persist().catch(function(){});
+    }
+  }catch(_){}
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&document.getElementById('modalRoot')&&document.getElementById('modalRoot').firstElementChild)closeModal();
+  });
+})();
+
+function status(s){
+  if(!s||!Array.isArray(s.records))return 'soft';
+  var r=latest({records:s.records.filter(function(x){return x&&x.affectsDue!==false;})});
+  if(!r)return 'soft';
+  var hasKm=Number(s.ikm)>0,hasDays=Number(s.days)>0;
+  if(!hasKm&&!hasDays)return 'soft';
+  var kmDue=hasKm?r.km+Number(s.ikm):null;
+  var dateDue=hasDays?addJalaliDays(r.date,Number(s.days)):null;
+  var today=parseJ(todayJ().join('/'));
+  var daysLeft=dateDue?dateOrdinal(parseJ(dateDue))-dateOrdinal(today):Infinity;
+  var kmLeft=kmDue===null?Infinity:kmDue-state.km;
+  if((kmDue!==null&&kmLeft<=0)||(dateDue&&daysLeft<=0))return 'black';
+  if((kmDue!==null&&kmLeft<=5000)||(dateDue&&daysLeft<=15))return 'red';
+  return 'green';
+}
+
+function renderServices(){
+  var search=document.getElementById('search');
+  var category=document.getElementById('categoryFilter');
+  var target=document.getElementById('serviceList');
+  if(!target)return;
+  var q=normalizeSearch(search?search.value:'');
+  var cat=category?category.value:'';
+  var rank={black:0,red:1,green:2,soft:3};
+  var list=state.services.filter(function(s){
+    return s.enabled&&(!cat||s.cat===cat)&&normalizeSearch(s.name+' '+s.cat+' '+s.rule).includes(q);
+  });
+  list.sort(function(a,b){
+    return rank[status(a)]-rank[status(b)]||
+      String(a.cat).localeCompare(String(b.cat),'fa')||
+      String(a.name).localeCompare(String(b.name),'fa');
+  });
+  var out='',last='';
+  list.forEach(function(s){
+    var st=status(s);
+    if(st!==last){
+      last=st;
+      out+='<div class="section-title status-heading status-'+st+'">'+esc(label(st))+
+        '<span class="count">'+list.filter(function(x){return status(x)===st;}).length+' مورد</span></div>';
+    }
+    out+='<article class="service '+st+'">'+
+      '<div class="service-head"><div><div class="service-name">'+esc(s.name)+'</div>'+
+      '<div class="category service-history-label">سوابق '+esc(s.name)+' · '+s.records.length+' سابقه</div></div>'+
+      '<span class="status">'+esc(label(st))+'</span></div>'+
+      '<div class="service-info">'+dueCardHTML(s)+'</div>'+
+      '<div class="service-actions">'+
+      '<button class="btn primary" type="button" onclick="recordService('+Number(s.id)+')">ثبت عملیات</button>'+
+      '<button class="btn" type="button" onclick="editService('+Number(s.id)+')">تنظیمات سرویس</button>'+
+      '<button class="btn" type="button" onclick="showRecords('+Number(s.id)+')">سوابق</button>'+
+      '</div></article>';
+  });
+  target.innerHTML=out||'<div class="empty">سرویسی با این مشخصات پیدا نشد.</div>';
+  renderDashboard();
+}
+
+function recordService(id){
+  var service=state.services.find(function(x){return x.id===id;});
+  if(!service)return;
+  var suffix=String(service.id).replace(/[^a-zA-Z0-9_-]/g,'_');
+  var kmId='rKm_'+suffix,dateId='rDate_'+suffix,costId='rCost_'+suffix,noteId='rNote_'+suffix,calId=dateId+'Calendar';
+  var today=todayJ().join('/');
+  var content=
+    '<div class="field"><label for="'+kmId+'">کیلومتر هنگام انجام عملیات</label>'+
+    '<div class="record-km-row"><input id="'+kmId+'" type="text" inputmode="numeric" autocomplete="off" value="'+esc(fmtNum(state.km))+'" oninput="formatGrouped(this)" placeholder="مثلاً 60.000">'+
+    '<button class="btn primary" type="button" onclick="setCurrentRecordKm(\''+kmId+'\')">کیلومتر فعلی</button></div></div>'+
+    '<div class="field"><label for="'+dateId+'">تاریخ شمسی</label><div class="date-entry">'+
+    '<input id="'+dateId+'" value="'+esc(today)+'" inputmode="numeric" autocomplete="off" placeholder="1405/08/15">'+
+    '<button class="btn" type="button" onclick="setTodayDate(\''+dateId+'\')">امروز</button>'+
+    '<button class="btn calendar-toggle" type="button" onclick="showJalaliCalendar(\''+dateId+'\')">تقویم</button></div><div id="'+calId+'"></div></div>'+
+    '<div class="field"><label for="'+costId+'">هزینه به تومان</label><input id="'+costId+'" type="text" inputmode="numeric" autocomplete="off" oninput="formatGrouped(this)" placeholder="1.500.000"></div>'+
+    '<div class="field"><label for="'+noteId+'">یادداشت</label><textarea id="'+noteId+'" dir="auto" placeholder="نتیجه بازدید، قطعه تعویض‌شده یا توضیحات عملیات..."></textarea></div>';
+  modal('ثبت عملیات: '+esc(service.name),content,function(){
+    var kmEl=document.getElementById(kmId),dateEl=document.getElementById(dateId),costEl=document.getElementById(costId),noteEl=document.getElementById(noteId);
+    if(!kmEl||!dateEl||!costEl||!noteEl)return;
+    var km=safeNumber(kmEl.value),date=normalizeDate(dateEl.value),cost=costEl.value.trim(),note=noteEl.value.trim();
+    if(km===null||!date||(cost!==''&&safeNumber(cost)===null)){toast('کیلومتر، تاریخ معتبر و هزینه غیرمنفی وارد کن.');return;}
+    if(km>state.km){toast('کیلومتر عملیات نمی‌تواند از کیلومتر فعلی خودرو بیشتر باشد.');return;}
+    if(dateOrdinal(parseJ(date))>dateOrdinal(parseJ(todayJ().join('/')))){toast('تاریخ عملیات نمی‌تواند در آینده باشد.');return;}
+    var previous=latest(service);
+    if(previous&&(km<previous.km||dateOrdinal(parseJ(date))<dateOrdinal(parseJ(previous.date)))){
+      toast('کیلومتر یا تاریخ عملیات نباید از آخرین سابقه این سرویس قدیمی‌تر باشد.');return;
+    }
+    var record={id:uid(),km:km,date:date,cost:cost,note:note,kind:'تعمیر و تعویض و بررسی',affectsDue:true,createdAt:new Date().toISOString()};
+    service.records.push(record);
+    if(!save()){service.records.pop();return;}
+    log('ثبت مراجعه مکانیک',service.name,'کیلومتر: '+fmtNum(km)+'\nتاریخ: '+date+'\nهزینه: '+(cost||'ثبت نشده')+'\nیادداشت: '+(note||'ندارد'));
+    closeModal();renderServices();
+  });
+  var kmInput=document.getElementById(kmId);
+  if(kmInput)kmInput.focus();
+}
+
+function setCurrentRecordKm(id){
+  var el=document.getElementById(id||'rKm');
+  if(el)el.value=fmtNum(state.km);
+}
+
+function setKm(value){
+  var input=document.getElementById('currentKm');
+  var next=safeNumber(value);
+  if(next===null){if(input)input.value=fmtNum(state.km);toast('کیلومتر باید عدد صحیح و غیرمنفی باشد.');return;}
+  var previous=state.km;
+  if(next===previous){if(input)input.value=fmtNum(next);return;}
+  if(next<previous&&!confirm('کیلومتر جدید از مقدار قبلی کمتر است. اگر اشتباه وارد شده، ادامه نده. آیا مطمئنی؟')){
+    if(input)input.value=fmtNum(previous);return;
+  }
+  state.km=next;
+  if(!save()){
+    state.km=previous;
+    if(input)input.value=fmtNum(previous);
+    return;
+  }
+  log('تغییر کیلومتر خودرو','خودرو','کیلومتر قبلی: '+fmtNum(previous)+'\nکیلومتر جدید: '+fmtNum(next),'settings');
+  if(input)input.value=fmtNum(next);
+  renderServices();
+}
+
+function restoreBackupText(rawText){
+  var previousState=state;
+  try{
+    var parsed=JSON.parse(rawText);
+    var data=parsed&&parsed.data?parsed.data:parsed;
+    if(!data||!Array.isArray(data.services)||!Array.isArray(data.logs))throw new Error('ساختار پشتیبان نامعتبر است');
+    var km=safeNumber(data.km);
+    if(km===null)throw new Error('کیلومتر نامعتبر است');
+    var services=data.services.map(function(item,index){return normalizeService(item,index);}).filter(Boolean);
+    if(data.services.length>0&&!services.length)throw new Error('هیچ سرویس معتبری پیدا نشد');
+    var seen=Object.create(null);
+    services.forEach(function(service,index){
+      var base=Number(service.id);
+      if(!Number.isSafeInteger(base)||base<1||seen[base]){
+        var next=index+1;
+        while(seen[next])next++;
+        service.id=next;
+      }
+      seen[service.id]=true;
+      service.records=Array.isArray(service.records)?service.records.filter(Boolean):[];
+    });
+    var logs=data.logs.filter(function(item){return item&&typeof item==='object';}).slice(0,5000).map(function(item){
+      return {id:String(item.id||uid()),date:String(item.date||''),time:String(item.time||''),createdAt:String(item.createdAt||''),action:String(item.action||'رویداد'),service:String(item.service||''),detail:String(item.detail||''),type:String(item.type||'service')};
+    });
+    if(!confirm('اطلاعات فعلی با اطلاعات فایل پشتیبان جایگزین شود؟ قبل از ادامه، از اطلاعات فعلی خروجی بگیر.'))return;
+    state={version:3,km:km,services:services,logs:logs};
+    if(!save()){state=previousState;return;}
+    log('بازیابی پشتیبان','دفترچه','اطلاعات از فایل پشتیبان بازیابی شد.','settings');
+    var currentKm=document.getElementById('currentKm');
+    if(currentKm)currentKm.value=fmtNum(state.km);
+    fillCategories();renderServices();renderHistory();
+    toast('بازیابی اطلاعات با موفقیت انجام شد.');
+  }catch(error){
+    state=previousState;
+    toast('فایل پشتیبان معتبر نیست یا ساختار آن پشتیبانی نمی‌شود.');
+  }
+}
+
+function toggleTheme(){
+  var theme=document.body.dataset.theme==='light'?'dark':'light';
+  document.body.dataset.theme=theme;
+  try{localStorage.setItem('mygarage_theme',theme);}catch(_){}
+  if(typeof updateThemeLabel==='function')updateThemeLabel();
+}
+
+</script>
+</body></html>
