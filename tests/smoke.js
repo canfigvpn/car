@@ -3,7 +3,7 @@ const fs = require('node:fs');
 
 const html = fs.readFileSync('app/src/main/assets/index.html', 'utf8');
 const scriptBlocks = [...html.matchAll(/<script(?: id="([^"]+)")?>([\s\S]*?)<\/script>/g)];
-const appScript = scriptBlocks.filter(x => x[1] !== 'mygarage-number-polish').map(x => x[2]).join('\n');
+const appScript = scriptBlocks.filter(x => !['mygarage-number-polish','mygarage-v37-effects'].includes(x[1])).map(x => x[2]).join('\n');
 assert.ok(appScript, 'inline application scripts must exist');
 
 
@@ -57,9 +57,9 @@ assert.ok(values.rDateCalendar.innerHTML.includes('calendar-close'), 'calendar m
 app.chooseJalaliDate(1405, 8, 22);
 assert.equal(values.rDate.value, '1405/08/22', 'selecting a Jalali day must fill the date field');
 assert.ok(html.includes('کیلومتر فعلی خودرو'), 'record form must offer current odometer fill');
-assert.ok(html.includes('Google Drive') && html.includes('driveSync'), 'Drive controls must exist');
+assert.ok(html.includes('Google Drive') && html.includes('driveSync') && html.includes('driveRestore'), 'online Google Drive controls must exist');
 assert.ok(html.includes('تنظیمات سرویس'), 'service settings label must exist');
-assert.ok(html.includes('home-toolbar') && html.includes('toolbar-menu'), 'home toolbar must place the menu at upper-left beside search');
+assert.ok(html.includes('home-toolbar') && html.includes('id="search"'), 'home search toolbar must exist without hamburger menu');
 assert.equal((html.match(/id="search"/g)||[]).length,1,'home search must exist exactly once');
 assert.ok(html.includes('add-service-button') && html.includes('function addService()'), 'custom service creation must be available');
 assert.ok(!html.includes('id="sortFilter"') && !html.includes("getElementById('sortFilter')"), 'sort control must be replaced by add-service action');
@@ -127,10 +127,19 @@ assert.ok(!html.includes('با تغییر کیلومتر، وضعیت و اول�
 assert.ok(!html.includes('مدیریت هوشمند نگهداری خودرو'), 'management subtitle must be removed');
 assert.ok(html.includes('aria-label="راهنمای وضعیت سرویس‌ها"') && html.includes('flex-wrap:nowrap!important'), 'all status labels must stay in one horizontal row');
 assert.ok(html.includes('status-heading status-') && html.includes('legend-item status-green'), 'status headings and legend labels must use matching clear colors');
-assert.ok(html.includes('service-history-label') && html.includes('سوابق \'+esc(s.name)+\' · \'+s.records.length+\' سابقه'), 'service cards must show service-specific history instead of category');
+assert.ok(html.includes('service-history-label') && html.includes('سوابق '+"'+esc(s.name)+' · '+count+' سابقه"), 'service cards must show service-specific history instead of category');
 assert.ok(html.includes("modal('سوابق '+esc(s.name)+' · '+s.records.length+' سابقه'"), 'history modal title must include service name and record count');
 assert.ok(html.includes('<span>کیلومتر فعلی</span><span>KM</span>'), 'main odometer title must use the shorter label');
 assert.ok(!html.includes('>کیلومتر فعلی خودرو</button>') && html.includes('>کیلومتر فعلی</button>'), 'record action button must use the shorter label');
-assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('class="nav-item nav-menu"') && html.includes('mygarage-v35-floating-navbar'), 'floating notch navbar with integrated hamburger must exist');
+assert.ok(html.includes('class="bottom" aria-label="ناوبری اصلی"') && html.includes('mygarage-v36-floating-navbar') && (html.match(/class="nav-item/g)||[]).length===6, 'six-item floating notch navbar must exist');
+assert.ok(html.includes('id="supportPage"') && html.includes('id="aboutPage"') && !html.includes('drawerOverlay'), 'support/about pages must replace the hamburger drawer');
 
-assert.ok(html.includes("document.getElementById('homeTab').classList.toggle('active'") && html.includes("document.getElementById('historyTab').classList.toggle('active'"), 'bottom navigation active state must follow the selected page');
+assert.ok(html.includes('function showPage(p)') && html.includes('function toggleTheme()'), 'navigation and theme switching must exist');
+assert.ok(html.includes('id="costReportPage"') && html.includes('id="costReportContent"') && html.includes("function showCostReport(){showPage('report')}"), 'cost report must be a dedicated page, not a modal');
+assert.ok(!html.includes('id="historySearch"'), 'search must not be shown on history or other secondary pages');
+assert.equal((html.match(/id="search"/g)||[]).length,1,'the only search field must belong to home');
+assert.ok(html.includes('class="modal-scroll"') && html.includes('overflow-y:auto!important'), 'service forms must scroll independently while save/cancel buttons stay visible');
+assert.ok(html.includes('id="startupLoader"') && html.includes(')},3500)') && html.includes('@keyframes loader-spin'), 'animated startup loader must last 3.5 seconds');
+assert.ok(html.includes('top:calc(env(safe-area-inset-top) + 12px)') && html.includes('.home-toolbar .search-box'), 'home search must keep top spacing and a clean background while scrolling');
+assert.equal((html.match(/id="modalRoot"/g)||[]).length,1,'only one modal root may exist');
+assert.ok(html.includes('function normalizeAppIcons()') && html.includes('preserveAspectRatio','xMidYMid meet'), 'SVG icons must be normalized consistently');

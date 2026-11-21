@@ -41,16 +41,16 @@ jobs:
           import re
           html = Path("app/src/main/assets/index.html").read_text(encoding="utf-8")
           matches = re.findall(r'<script(?: id="([^"]+)")?>([\s\S]*?)</script>', html)
-          scripts = [source for script_id, source in matches if script_id != "mygarage-number-polish"]
+          scripts = [source for script_id, source in matches if script_id not in ("mygarage-number-polish", "mygarage-v37-effects")]
           if not scripts:
               raise SystemExit("App JavaScript blocks not found")
           Path("/tmp/app.js").write_text("\n".join(scripts), encoding="utf-8")
-          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "function showJalaliCalendar", "function closeJalaliCalendar", "function dueInfoHtml", "function toggleDrawer", "function driveSync", "function driveRestore", "function autoTextDirection", "تنظیمات سرویس", "search-clear", "home-toolbar", "add-service-button", "function addService", "#E2E2EE", "mygarage-v35-floating-navbar", "service-history-label", "status-heading status-", "تعمیر و تعویض و بررسی", "const KEY='mygarage_service_book_v3'"]
+          required = ["function importData", "function exportData", "function showRecords", "function parseJ", "function status", "function showCostReport", "function toggleTheme", "function requestImport", "function restoreBackupText", "function showJalaliCalendar", "function closeJalaliCalendar", "function dueInfoHtml", "function toggleDrawer", "function driveSync", "function driveRestore", "function autoTextDirection", "تنظیمات سرویس", "search-clear", "home-toolbar", "add-service-button", "function addService", "#E2E2EE", "mygarage-v36-floating-navbar", "mygarage-v36-navigation", "mygarage-v37-navigation", "mygarage-v37-motion-pages", "startupLoader", "modal-scroll", "costReportPage", "service-history-label", "status-heading status-", "تعمیر و تعویض و بررسی", "const KEY='mygarage_service_book_v3'"]
           missing = [item for item in required if item not in html]
           if missing:
               raise SystemExit("Missing app features: " + ", ".join(missing))
-          if "android.permission.INTERNET" in Path("app/src/main/AndroidManifest.xml").read_text():
-              raise SystemExit("Offline app must not request internet permission")
+          if "android.permission.INTERNET" not in Path("app/src/main/AndroidManifest.xml").read_text():
+              raise SystemExit("Google Drive online backup requires INTERNET permission")
           PY
           node --check /tmp/app.js
           node tests/smoke.js
@@ -111,7 +111,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyGarage-v3.5.0-APK
+          name: MyGarage-v3.7.0-APK
           path: ${{ env.APK_PATH }}
           if-no-files-found: error
           retention-days: 14
