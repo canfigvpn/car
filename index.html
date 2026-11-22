@@ -365,8 +365,8 @@ button:focus-visible,.search-box input:focus-visible{outline:2px solid var(--gol
 @media(max-width:360px){.dashboard{gap:4px!important}.dashboard .metric{padding:9px 2px!important}.dashboard .metric span{font-size:8px!important}.km-input{gap:5px;padding:7px!important}.km-input input{height:53px!important;letter-spacing:1px!important}}
 body[data-theme="light"] .search-page-box{background:#fff;border-color:#d3dfe6}body[data-theme="light"] .search-page-box input{color:#17232d}body[data-theme="light"] .km-input{background:linear-gradient(180deg,#dce9e1,#c8dbcf)!important;border-color:#91b49d!important;box-shadow:inset 0 3px 14px #526d5b33!important}body[data-theme="light"] .km-input input{background:repeating-linear-gradient(90deg,#e9f4ec 0,#e9f4ec calc(14.285% - 2px),#b8d1c0 calc(14.285% - 2px),#b8d1c0 14.285%)!important;color:#17653d!important;text-shadow:none!important}body[data-theme="light"] .km-input>span{color:#426b52!important}
 </style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-mark"><i class="material-symbols-rounded loader-symbol" aria-hidden="true">directions_car</i><span>MG</span></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
-<header class="top"><div><div class="brand">دفترچه سرویس خودرو</div></div><button id="themeButton" hidden></button></header>
-<section id="homePage"><div class="km-card"><div class="km-head"><span>کیلومتر فعلی</span><span>KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div></div><div class="dashboard" id="dashboard"></div>
+<header class="top"><div></div><button id="themeButton" hidden></button></header>
+<section id="homePage"><div class="km-card"><div class="km-head"><span>کیلومتر فعلی خودرو KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div></div><div class="dashboard" id="dashboard"></div>
 <div class="filters"><select id="categoryFilter" onchange="renderServices()"><option value="">همه دسته‌ها</option></select><button class="add-service-button" type="button" onclick="addService()" aria-label="افزودن سرویس جدید"><i class="material-symbols-rounded" aria-hidden="true">add</i><span>افزودن سرویس</span></button></div>
 <div class="legend" aria-label="راهنمای وضعیت سرویس‌ها"><span class="legend-item status-green"><i class="dot" style="background:#238653"></i>به‌روز</span><span class="legend-item status-red"><i class="dot" style="background:#c74747"></i>نزدیک موعد</span><span class="legend-item status-black"><i class="dot" style="background:#20252b"></i>گذشته از موعد</span><span class="legend-item status-soft"><i class="dot" style="background:#687887"></i>ثبت‌نشده یا بدون بازه ثابت</span></div><div id="serviceList"></div></section>
 <section id="searchPage" class="app-page hidden" aria-label="جست‌وجوی سرویس‌ها">
@@ -374,7 +374,7 @@ body[data-theme="light"] .search-page-box{background:#fff;border-color:#d3dfe6}b
 <div class="search-page-box"><i class="material-symbols-rounded" aria-hidden="true">search</i><input id="search" type="search" placeholder="مثلاً روغن موتور، ترمز..." oninput="renderServices();toggleSearchClear('search')" autocomplete="off"><button class="search-clear hidden" type="button" aria-label="پاک کردن جست‌وجو" onclick="clearSearch('search')">×</button></div>
 <div class="section-title">نتایج جست‌وجو <span class="count" id="searchResultCount"></span></div><div id="searchResults"></div>
 </section>
-<section id="historyPage" class="hidden"><div class="section-title">تاریخچه کامل تغییرات <span class="count" id="historyCount"></span></div><div class="hint">تمام ثبت‌ها، ویرایش‌ها، حذف‌ها و تغییر کیلومتر با جزئیات و زمان دقیق نگهداری می‌شوند.</div><div class="history-filter"><button class="btn active" onclick="filterHistory('all',this)">همه</button><button class="btn" onclick="filterHistory('service',this)">سرویس‌ها</button><button class="btn" onclick="filterHistory('settings',this)">تنظیمات</button></div><div id="historyList"></div></section>
+<section id="historyPage" class="hidden"><span class="count hidden" id="historyCount" aria-hidden="true"></span><div class="history-filter"><button class="btn active" onclick="filterHistory('all',this)">همه</button><button class="btn" onclick="filterHistory('service',this)">سرویس‌ها</button><button class="btn" onclick="filterHistory('settings',this)">تنظیمات</button></div><div id="historyList"></div></section>
 <section id="costReportPage" class="app-page hidden"><div class="section-title">گزارش هزینه‌های خودرو</div><div id="costReportContent"></div></section>
 <section id="supportPage" class="app-page hidden"><div class="section-title">پشتیبانی و پشتیبان‌گیری</div>
 <div class="support-card"><h3>پشتیبان‌گیری دستی</h3><p>فایل پشتیبان را در حافظه گوشی یا محل دلخواه ذخیره کن و برای بازیابی، همان فایل را انتخاب کن.</p><div class="support-actions"><button class="btn primary" type="button" onclick="exportData()">ذخیره پشتیبان در گوشی</button><button class="btn" type="button" onclick="requestImport()">بازیابی از فایل گوشی</button></div></div>
@@ -1731,6 +1731,141 @@ body[data-theme="light"] .scroll-top-button{background:linear-gradient(145deg,#f
   position();
  }
  function init(){setupLoader();setupScrollTop()}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
+
+
+<style id="requested-refinements-2026">
+/* Status cards: visible category colors in both themes */
+.service.green,.service.status-green{background:linear-gradient(145deg,#173f30,#1b3029)!important;border:1.5px solid #55bd83!important;color:#effff5!important}
+.service.red,.service.status-red{background:linear-gradient(145deg,#512d30,#38252b)!important;border:1.5px solid #e27679!important;color:#fff5f4!important}
+.service.black,.service.status-black{background:linear-gradient(145deg,#111820,#252e37)!important;border:1.5px solid #84909b!important;color:#f4f7fa!important}
+.service.soft,.service.manual{background:linear-gradient(145deg,#293b4b,#202f3b)!important;border:1.5px solid #8ba4b8!important;color:#f1f6fa!important}
+.service.green .service-info,.service.status-green .service-info,
+.service.red .service-info,.service.status-red .service-info,
+.service.black .service-info,.service.status-black .service-info,
+.service.soft .service-info,.service.manual .service-info{color:inherit!important;opacity:.9}
+.service.green .category,.service.status-green .category,
+.service.red .category,.service.status-red .category,
+.service.black .category,.service.status-black .category,
+.service.soft .category,.service.manual .category{color:inherit!important;opacity:.78}
+.service.green .status,.service.status-green .status{background:#65d99a24!important;border-color:#65d99a70!important;color:#9af0bd!important}
+.service.red .status,.service.status-red .status{background:#ff858526!important;border-color:#ff858575!important;color:#ffb4b1!important}
+.service.black .status,.service.status-black .status{background:#aab6c126!important;border-color:#aab6c16b!important;color:#e4eaf0!important}
+.service.soft .status,.service.manual .status{background:#9ab6d126!important;border-color:#9ab6d16b!important;color:#d5e6f5!important}
+body[data-theme="light"] .service.green,body[data-theme="light"] .service.status-green{background:linear-gradient(145deg,#d8f1e1,#eaf8ee)!important;border-color:#55ad78!important;color:#174d31!important}
+body[data-theme="light"] .service.red,body[data-theme="light"] .service.status-red{background:linear-gradient(145deg,#ffe1dc,#fff0ed)!important;border-color:#d87570!important;color:#762d2b!important}
+body[data-theme="light"] .service.black,body[data-theme="light"] .service.status-black{background:linear-gradient(145deg,#dce2e7,#cbd4dc)!important;border-color:#788692!important;color:#202b34!important}
+body[data-theme="light"] .service.soft,body[data-theme="light"] .service.manual{background:linear-gradient(145deg,#e0ebf5,#eff5fa)!important;border-color:#8ba9c2!important;color:#29475e!important}
+body[data-theme="light"] .service.green .service-info,body[data-theme="light"] .service.status-green .service-info,
+body[data-theme="light"] .service.red .service-info,body[data-theme="light"] .service.status-red .service-info,
+body[data-theme="light"] .service.black .service-info,body[data-theme="light"] .service.status-black .service-info,
+body[data-theme="light"] .service.soft .service-info,body[data-theme="light"] .service.manual .service-info,
+body[data-theme="light"] .service .category{color:inherit!important;opacity:.84}
+body[data-theme="light"] .service.green .status,body[data-theme="light"] .service.status-green .status{background:#8bd5a544!important;color:#155b36!important;border-color:#65b985!important}
+body[data-theme="light"] .service.red .status,body[data-theme="light"] .service.status-red .status{background:#f3aaa044!important;color:#852e2c!important;border-color:#d77b75!important}
+body[data-theme="light"] .service.black .status,body[data-theme="light"] .service.status-black .status{background:#9aa8b344!important;color:#26333e!important;border-color:#84929e!important}
+body[data-theme="light"] .service.soft .status,body[data-theme="light"] .service.manual .status{background:#aac4dc55!important;color:#31536d!important;border-color:#8ba9c2!important}
+
+/* Centered mileage title */
+.km-head{justify-content:center!important;text-align:center!important;width:100%!important}
+.km-head span:first-child:before{display:none!important}
+.km-head span:last-child{display:none!important}
+
+/* Flip-style digital odometer */
+.km-input{position:relative!important;isolation:isolate!important;overflow:hidden!important}
+.km-input .flip-display{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(2px,1vw,6px);width:100%;min-width:0;direction:ltr;pointer-events:none}
+.km-input .flip-digit{position:relative;display:grid;place-items:center;min-width:0;width:clamp(23px,6.4vw,42px);height:clamp(42px,11vw,58px);overflow:hidden;border:1px solid #ffffff17;border-radius:8px;background:linear-gradient(180deg,#26343a 0%,#111b20 48%,#0b1418 52%,#1b292d 100%);box-shadow:inset 0 1px #ffffff12,0 3px 7px #0005;color:#b9f2d0;font:900 clamp(24px,7vw,39px)/1 ui-monospace,Consolas,monospace;text-shadow:0 0 12px #69e6a344}
+.km-input .flip-digit:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#ffffff20;box-shadow:0 1px #0008}
+.km-input .flip-digit.is-changing{animation:flip-digit-roll .52s cubic-bezier(.2,.75,.25,1)}
+.km-input .flip-separator{color:#a7c7b7;font:800 22px/1 ui-monospace,monospace}
+.km-input input#currentKm{position:absolute!important;inset:0!important;z-index:2!important;width:100%!important;height:100%!important;opacity:.015!important;cursor:text!important;padding:0!important;color:transparent!important;-webkit-text-fill-color:transparent!important;caret-color:#a7edc3!important}
+.km-input:focus-within .flip-digit{border-color:#65d7a177}
+body[data-theme="light"] .km-input .flip-digit{background:linear-gradient(180deg,#fff 0%,#e7eef0 48%,#dbe5e8 52%,#f7fafb 100%);border-color:#b8c9c8;color:#176d49;text-shadow:none;box-shadow:inset 0 1px #fff,0 3px 7px #304b3b18}
+body[data-theme="light"] .km-input .flip-digit:after{background:#8fa69a55}
+body[data-theme="light"] .km-input .flip-separator{color:#557765}
+@keyframes flip-digit-roll{0%{transform:perspective(180px) rotateX(0);filter:brightness(1)}45%{transform:perspective(180px) rotateX(-82deg);filter:brightness(.65)}55%{transform:perspective(180px) rotateX(82deg);filter:brightness(.75)}100%{transform:perspective(180px) rotateX(0);filter:brightness(1)}}
+
+/* Back buttons: CSS-only icon centered in its own surface */
+.page-back,.search-page-head>button{
+ display:grid!important;place-items:center!important;text-align:center!important;
+ border-radius:15px!important;background:linear-gradient(145deg,#2a4050,#172531)!important;
+ border:1px solid #d7bd8770!important;color:#f0d9a8!important;
+ box-shadow:0 6px 18px #0003!important;padding:0!important;position:relative!important
+}
+.page-back:before,.search-page-head>button:before{
+ content:""!important;display:block!important;width:11px!important;height:11px!important;
+ border-left:2.4px solid currentColor!important;border-bottom:2.4px solid currentColor!important;
+ transform:rotate(45deg)!important;margin:0!important;position:absolute!important;left:50%!important;top:50%!important;
+ translate:-35% -50%!important
+}
+.page-back svg,.search-page-head>button svg{display:none!important}
+body[data-theme="light"] .page-back,body[data-theme="light"] .search-page-head>button{background:linear-gradient(145deg,#fff,#e8eef2)!important;color:#785b2c!important;border-color:#c6aa78!important}
+
+/* Smoother scroll-to-top, positioned subtly higher and to the right */
+.scroll-top-button{
+ left:calc(50% + 3px)!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;
+ transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .85s cubic-bezier(.16,1,.3,1),visibility .55s!important;
+ transform:translate(-50%,12px) scale(.94)!important;border-radius:15px!important;
+}
+.scroll-top-button.is-visible{transform:translate(-50%,0) scale(1)!important}
+.scroll-top-button:active{transform:translate(-50%,0) scale(.96)!important}
+@media(prefers-reduced-motion:reduce){.scroll-top-button{transition:none!important}}
+</style>
+<script id="requested-refinements-2026-js">
+(function(){
+ 'use strict';
+ function setupFlipOdometer(){
+  var input=document.getElementById('currentKm');if(!input||input.dataset.flipReady)return;
+  input.dataset.flipReady='1';
+  var display=document.createElement('div');display.className='flip-display';display.setAttribute('aria-hidden','true');
+  input.parentNode.insertBefore(display,input);
+  var previous='';
+  function draw(){
+   var raw=String(input.value||'').replace(/[^0-9]/g,'');
+   var formatted=raw?raw.replace(/\B(?=(\d{3})+(?!\d))/g,','):'0';
+   if(formatted===previous)return;
+   previous=formatted;display.innerHTML='';
+   Array.from(formatted).forEach(function(ch){
+    var cell=document.createElement('span');
+    if(ch===','){cell.className='flip-separator';cell.textContent=','}
+    else{cell.className='flip-digit';cell.textContent=ch}
+    display.appendChild(cell);
+   });
+   var cells=display.querySelectorAll('.flip-digit');
+   cells.forEach(function(cell,index){
+    var old=draw.lastDigits&&draw.lastDigits[index];
+    if(old!==undefined&&old!==cell.textContent){cell.classList.add('is-changing');cell.addEventListener('animationend',function(){cell.classList.remove('is-changing')},{once:true})}
+   });
+   draw.lastDigits=Array.from(cells).map(function(x){return x.textContent});
+  }
+  input.addEventListener('input',draw);input.addEventListener('change',draw);
+  var descriptor=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+  if(descriptor&&descriptor.get&&descriptor.set){
+   Object.defineProperty(input,'value',{configurable:true,enumerable:descriptor.enumerable,get:function(){return descriptor.get.call(this)},set:function(v){descriptor.set.call(this,v);draw()}});
+  }
+  draw();
+ }
+ function setupSlowScroll(){
+  var b=document.getElementById('scrollTopButton');if(!b||b.dataset.slowScroll)return;
+  b.dataset.slowScroll='1';
+  b.addEventListener('click',function(event){
+   event.preventDefault();
+   var start=window.scrollY||document.documentElement.scrollTop||0;
+   if(start<=0)return;
+   var duration=1250,startTime=0;
+   function frame(time){
+    if(!startTime)startTime=time;
+    var p=Math.min(1,(time-startTime)/duration);
+    var eased=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+    window.scrollTo(0,start*(1-eased));
+    if(p<1)requestAnimationFrame(frame);
+   }
+   requestAnimationFrame(frame);
+  },true);
+ }
+ function init(){setupFlipOdometer();setupSlowScroll()}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
