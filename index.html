@@ -1971,3 +1971,132 @@ body[data-theme="light"] #serviceActionPage .record-row{background:#fff!importan
  #serviceActionPage .action-page-head{margin-inline:2px!important}
 }
 </style>
+
+
+<style id="final-requested-fixes-2026-11-22">
+/* Fix the history page's artificial empty space when there are only a few records.
+   The modal scroll area is moved out of its original flex modal, so it must not grow. */
+#serviceActionPage .action-page-panel,
+#serviceActionPage .action-page-content{
+  height:auto!important;
+  min-height:0!important;
+  flex:0 0 auto!important;
+}
+#serviceActionPage .modal-scroll{
+  display:block!important;
+  flex:0 0 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  padding:0!important;
+  margin:0!important;
+}
+#serviceActionPage .record-list{
+  display:grid!important;
+  grid-auto-rows:max-content!important;
+  align-content:start!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+#serviceActionPage .record-list>.empty{
+  display:block!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+}
+#serviceActionPage .record-row{
+  height:auto!important;
+  min-height:0!important;
+}
+
+/* Professional RTL back arrow */
+.internal-page-head .page-back:before,
+.action-page-head .page-back:before,
+.search-page-head>button:before{
+  content:"arrow_forward"!important;
+  display:block!important;
+  width:auto!important;
+  height:auto!important;
+  border:0!important;
+  margin:0!important;
+  position:static!important;
+  translate:none!important;
+  transform:none!important;
+  font-family:"Material Symbols Rounded"!important;
+  font-size:25px!important;
+  font-weight:normal!important;
+  line-height:1!important;
+  font-feature-settings:"liga"!important;
+  -webkit-font-feature-settings:"liga"!important;
+}
+.internal-page-head .page-back,
+.action-page-head .page-back,
+.search-page-head>button{
+  display:grid!important;
+  place-items:center!important;
+}
+
+/* History-count badges inherit the exact service-status color family */
+.service.red .service-history-count{background:#f0783028!important;border-color:#ff9a55!important;color:#ffad70!important}
+.service.green .service-history-count{background:#35b97825!important;border-color:#56d494!important;color:#8aefb4!important}
+.service.black .service-history-count{background:#e44c5428!important;border-color:#f16c73!important;color:#ff969b!important}
+.service.soft .service-history-count,
+.service.manual .service-history-count{background:#263d5066!important;border-color:#718da5!important;color:#c1d5e8!important}
+
+/* Explicit status-label colors in dark theme */
+.service.black>.service-head>.status{background:#b928352c!important;border:1px solid #ef626c!important;color:#ff858b!important}
+.service.red>.service-head>.status{background:#f0783028!important;border:1px solid #ff963f!important;color:#ff9c45!important}
+.service.green>.service-head>.status{background:#27a96828!important;border:1px solid #42c783!important;color:#72e5a4!important}
+.service.soft>.service-head>.status,
+.service.manual>.service-head>.status{background:#1b2c3a!important;border:1px solid #526e86!important;color:#b7cde0!important}
+
+/* Explicit status-label and badge colors in light theme */
+body[data-theme="light"] .service.black>.service-head>.status{background:#f7d9d8!important;border:1px solid #b83a3d!important;color:#8f171d!important}
+body[data-theme="light"] .service.black .service-history-count{background:#f7d9d8!important;border-color:#b83a3d!important;color:#8f171d!important}
+body[data-theme="light"] .service.red>.service-head>.status{background:#ff8a24!important;border:1px solid #ed710d!important;color:#fff!important}
+body[data-theme="light"] .service.red .service-history-count{background:#ff8a24!important;border-color:#ed710d!important;color:#fff!important}
+body[data-theme="light"] .service.green>.service-head>.status{background:#d8f2df!important;border:1px solid #31965a!important;color:#176b38!important}
+body[data-theme="light"] .service.green .service-history-count{background:#d8f2df!important;border-color:#31965a!important;color:#176b38!important}
+body[data-theme="light"] .service.soft>.service-head>.status,
+body[data-theme="light"] .service.manual>.service-head>.status{background:#edf4f8!important;border:1px solid #c2d3df!important;color:#526f83!important}
+body[data-theme="light"] .service.soft .service-history-count,
+body[data-theme="light"] .service.manual .service-history-count{background:#edf4f8!important;border-color:#c2d3df!important;color:#526f83!important}
+
+/* "More" section headings: primary color, larger type, and matching icons */
+.more-page-content>.section-title{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  margin:12px 3px 14px!important;
+  color:var(--gold)!important;
+  font-size:18px!important;
+  line-height:1.6!important;
+  font-weight:850!important;
+}
+.more-page-content>.section-title:before{
+  display:inline-grid!important;
+  place-items:center!important;
+  flex:0 0 38px!important;
+  width:38px!important;
+  height:38px!important;
+  border:1px solid #d7bd8755!important;
+  border-radius:13px!important;
+  background:#d7bd8718!important;
+  color:var(--gold)!important;
+  font-family:"Material Symbols Rounded"!important;
+  font-size:22px!important;
+  font-weight:normal!important;
+  line-height:1!important;
+  font-feature-settings:"liga"!important;
+  -webkit-font-feature-settings:"liga"!important;
+}
+.more-page-content>.section-title:first-child:before{content:"backup"!important}
+.more-page-content>.section-title.more-about-heading:before{content:"info"!important}
+body[data-theme="light"] .more-page-content>.section-title:before{
+  background:#f3ead9!important;
+  border-color:#d6c39d!important;
+}
+</style>
