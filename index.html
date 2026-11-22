@@ -613,7 +613,7 @@ function renderServices(){
     return s.enabled&&(!cat||s.cat===cat)&&normalizeSearch(s.name+' '+s.cat+' '+s.rule).includes(q);
   });
   list.sort(function(a,b){
-    return rank[status(a)]-rank(status(b))||
+    return rank[status(a)]-rank[status(b)]||
       String(a.cat).localeCompare(String(b.cat),'fa')||
       String(a.name).localeCompare(String(b.name),'fa');
   });
