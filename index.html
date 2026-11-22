@@ -1244,7 +1244,7 @@ function buildMorePage(){
  var support=byId('supportPage'),about=byId('aboutPage');
  var supportTitle=document.createElement('div');supportTitle.className='section-title more-support-heading';
  supportTitle.appendChild(document.createTextNode('پشتیبان‌گیری'));
- var supportIcon=document.createElement('i');supportIcon.className='material-symbols-rounded more-heading-icon';supportIcon.setAttribute('aria-hidden','true');supportIcon.textContent='backup';supportTitle.appendChild(supportIcon);
+ var supportIcon=document.createElement('i');supportIcon.className='material-symbols-rounded more-heading-icon';supportIcon.setAttribute('aria-hidden','true');supportIcon.textContent='cloud_download';supportTitle.appendChild(supportIcon);
  content.appendChild(supportTitle);
  if(support){Array.from(support.children).forEach(function(node){if(node.classList&&node.classList.contains('section-title'))return;content.appendChild(node)});support.classList.add('hidden');support.setAttribute('aria-hidden','true');}
  var divider=document.createElement('div');divider.className='more-divider';content.appendChild(divider);
@@ -2314,5 +2314,121 @@ body[data-theme="light"] .more-page-content>.section-title .more-heading-icon{
 #startupLoader .loader-wave-wrap{width:min(86vw,410px)!important;height:100px!important;padding:8px 0!important}
 #startupLoader .loader-wave{width:min(82vw,390px)!important;height:88px!important}
 #startupLoader .loader-track i{animation-duration:5s!important}
+@media(prefers-reduced-motion:reduce){#startupLoader .loader-wave path{animation:none!important}}
+</style>
+
+<style id="final-visual-history-loader-more-fixes-2026-11-22">
+/* SERVICE CARDS: keep every card surface neutral; status is shown by the edge,
+   the service title and the status label only. */
+.service,
+.service.black,.service.red,.service.green,.service.soft,.service.manual,
+.service.status-black,.service.status-red,.service.status-green,.service.status-soft{
+  background:linear-gradient(135deg,#101e2c 0%,#182b3d 100%)!important;
+  border-style:solid!important;border-width:1.5px!important;
+  color:var(--text)!important;
+}
+.service.black,.service.status-black{border-color:#e34f5b!important}
+.service.red,.service.status-red{border-color:#ff922e!important}
+.service.green,.service.status-green{border-color:#36b975!important}
+.service.soft,.service.manual,.service.status-soft{border-color:#7895b0!important}
+.service.black .service-name,.service.status-black .service-name{color:#ff858d!important}
+.service.red .service-name,.service.status-red .service-name{color:#ffad51!important}
+.service.green .service-name,.service.status-green .service-name{color:#6cdda0!important}
+.service.soft .service-name,.service.manual .service-name,.service.status-soft .service-name{color:#c1d8eb!important}
+.service .service-info,.service .category{color:#c2ced6!important}
+.service.black>.service-head>.status{background:#e34f5b20!important;border:1px solid #e34f5b!important;color:#ff858d!important}
+.service.red>.service-head>.status{background:#ff922e20!important;border:1px solid #ff922e!important;color:#ffad51!important}
+.service.green>.service-head>.status{background:#36b97520!important;border:1px solid #36b975!important;color:#6cdda0!important}
+.service.soft>.service-head>.status,.service.manual>.service-head>.status{background:#7895b020!important;border:1px solid #7895b0!important;color:#c1d8eb!important}
+.service.black .service-history-count{border-color:#e34f5b!important;color:#ff858d!important}
+.service.red .service-history-count{border-color:#ff922e!important;color:#ffad51!important}
+.service.green .service-history-count{border-color:#36b975!important;color:#6cdda0!important}
+.service.soft .service-history-count,.service.manual .service-history-count{border-color:#7895b0!important;color:#c1d8eb!important}
+
+/* Light mode: identical icy-blue card fill, with clearly colored borders and titles. */
+body[data-theme="light"] .service,
+body[data-theme="light"] .service.black,body[data-theme="light"] .service.red,
+body[data-theme="light"] .service.green,body[data-theme="light"] .service.soft,
+body[data-theme="light"] .service.manual,body[data-theme="light"] .service.status-black,
+body[data-theme="light"] .service.status-red,body[data-theme="light"] .service.status-green,
+body[data-theme="light"] .service.status-soft{
+  background:linear-gradient(135deg,#f8fcff 0%,#eaf3fa 100%)!important;
+  color:#29465b!important;
+}
+body[data-theme="light"] .service.black,body[data-theme="light"] .service.status-black{border-color:#a91f2b!important}
+body[data-theme="light"] .service.red,body[data-theme="light"] .service.status-red{border-color:#ed7100!important}
+body[data-theme="light"] .service.green,body[data-theme="light"] .service.status-green{border-color:#31965a!important}
+body[data-theme="light"] .service.soft,body[data-theme="light"] .service.manual,body[data-theme="light"] .service.status-soft{border-color:#b8ccdc!important}
+body[data-theme="light"] .service.black .service-name,body[data-theme="light"] .service.status-black .service-name{color:#a91f2b!important}
+body[data-theme="light"] .service.red .service-name,body[data-theme="light"] .service.status-red .service-name{color:#e85e00!important}
+body[data-theme="light"] .service.green .service-name,body[data-theme="light"] .service.status-green .service-name{color:#176b39!important}
+body[data-theme="light"] .service.soft .service-name,body[data-theme="light"] .service.manual .service-name,body[data-theme="light"] .service.status-soft .service-name{color:#526f85!important}
+body[data-theme="light"] .service .service-info,body[data-theme="light"] .service .category{color:#465b69!important}
+body[data-theme="light"] .service.black>.service-head>.status{background:#f7dfe1!important;border-color:#a91f2b!important;color:#8f171d!important}
+body[data-theme="light"] .service.red>.service-head>.status{background:#ff8a24!important;border-color:#ed7100!important;color:#fff!important}
+body[data-theme="light"] .service.green>.service-head>.status{background:#c0e9cd!important;border-color:#31965a!important;color:#14532d!important}
+body[data-theme="light"] .service.soft>.service-head>.status,body[data-theme="light"] .service.manual>.service-head>.status{background:#e1edf6!important;border-color:#b8ccdc!important;color:#36566d!important}
+body[data-theme="light"] .service.black .service-history-count{background:#f7dfe1!important;border-color:#a91f2b!important;color:#8f171d!important}
+body[data-theme="light"] .service.red .service-history-count{background:#ff8a24!important;border-color:#ed7100!important;color:#fff!important}
+body[data-theme="light"] .service.green .service-history-count{background:#c0e9cd!important;border-color:#31965a!important;color:#14532d!important}
+body[data-theme="light"] .service.soft .service-history-count,body[data-theme="light"] .service.manual .service-history-count{background:#e1edf6!important;border-color:#b8ccdc!important;color:#36566d!important}
+
+/* History list: remove the fixed minimum heights that created a black tail
+   below the action buttons, and allow every record to contribute to the page. */
+#serviceActionPage,#serviceActionPage .action-page-panel,
+#serviceActionPage .action-page-content,#serviceActionPage .modal-scroll,
+#serviceActionPage .record-list,#serviceActionPage .record-row{
+  height:auto!important;min-height:0!important;max-height:none!important;
+}
+#serviceActionPage{overflow:visible!important;padding-bottom:0!important}
+#serviceActionPage .action-page-panel{display:block!important;flex:0 0 auto!important}
+#serviceActionPage .action-page-content{display:block!important;overflow:visible!important;flex:0 0 auto!important}
+#serviceActionPage .modal-scroll{display:block!important;overflow:visible!important;flex:0 0 auto!important}
+#serviceActionPage .record-list{display:grid!important;grid-auto-rows:max-content!important;align-content:start!important;overflow:visible!important}
+#serviceActionPage .record-row{display:block!important;flex:none!important;overflow:visible!important}
+#serviceActionPage .modal-actions{position:static!important;flex:0 0 auto!important;margin:14px 0 0!important;padding:0 0 max(0px,env(safe-area-inset-bottom))!important}
+#modalRoot .modal-back{align-items:flex-end!important;padding:0!important}
+#modalRoot .modal{
+  width:100%!important;max-width:720px!important;max-height:calc(100dvh - env(safe-area-inset-top))!important;
+  min-height:0!important;overflow:hidden!important;border-radius:22px 22px 0 0!important;
+  padding:16px 0 0!important;display:flex!important;flex-direction:column!important;
+}
+#modalRoot .modal-title{flex:0 0 auto!important;padding:0 14px!important}
+#modalRoot .modal-scroll{
+  flex:0 1 auto!important;min-height:0!important;height:auto!important;max-height:calc(100dvh - 190px)!important;
+  overflow-x:hidden!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+  padding:5px 14px 14px!important;
+}
+#modalRoot .record-list{display:grid!important;grid-auto-rows:max-content!important;align-content:start!important;gap:9px!important;height:auto!important;min-height:0!important}
+#modalRoot .record-row{display:block!important;flex:none!important;height:auto!important;min-height:0!important;overflow:visible!important}
+#modalRoot .modal-actions{
+  flex:0 0 auto!important;display:grid!important;grid-template-columns:1fr 1fr!important;
+  gap:10px!important;margin:0!important;padding:12px 14px calc(12px + env(safe-area-inset-bottom))!important;
+  background:var(--panel)!important;border-top:1px solid var(--line)!important;
+}
+body[data-theme="light"] #modalRoot .modal-actions{background:#fff!important}
+
+/* Make both headings' icons explicit Material Symbols and keep text on the right. */
+.more-page-content>.section-title{
+  display:flex!important;flex-direction:row!important;direction:rtl!important;
+  align-items:center!important;justify-content:flex-start!important;gap:10px!important;
+}
+.more-page-content>.section-title:before{display:none!important;content:none!important}
+.more-page-content>.section-title .more-heading-icon{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 40px!important;width:40px!important;height:40px!important;
+  font-family:"Material Symbols Rounded"!important;font-weight:normal!important;font-style:normal!important;
+  font-feature-settings:"liga"!important;-webkit-font-feature-settings:"liga"!important;
+  font-size:23px!important;line-height:1!important;color:var(--gold)!important;
+  border:1px solid #d7bd8755!important;border-radius:13px!important;background:#d7bd8718!important;
+}
+.more-page-content>.more-support-heading .more-heading-icon{font-family:"Material Symbols Rounded"!important}
+body[data-theme="light"] .more-page-content>.section-title .more-heading-icon{background:#f3ead9!important;border-color:#d6c39d!important}
+
+/* The startup animation is icon-free and remains visible for five seconds. */
+#startupLoader{z-index:99999!important}
+#startupLoader .loader-wave-wrap{width:min(86vw,410px)!important;height:100px!important;padding:8px 0!important}
+#startupLoader .loader-wave{width:min(82vw,390px)!important;height:88px!important}
+#startupLoader .loader-track i{animation:loader-progress 5s linear both!important}
 @media(prefers-reduced-motion:reduce){#startupLoader .loader-wave path{animation:none!important}}
 </style>
