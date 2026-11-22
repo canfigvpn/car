@@ -364,7 +364,7 @@ button:focus-visible,.search-box input:focus-visible{outline:2px solid var(--gol
 .km-card{padding:17px!important}.km-head{font-size:12px!important}.km-input{display:flex!important;align-items:center;gap:8px;padding:10px!important;border-radius:16px!important;background:linear-gradient(180deg,#060d0b,#101a16)!important;border:1px solid #557564!important;box-shadow:inset 0 3px 18px #000b,0 0 0 3px #ffffff05!important}.km-input input{width:100%;min-width:0;height:59px!important;padding:5px 8px!important;border:0!important;border-radius:9px!important;background:repeating-linear-gradient(90deg,#17251f 0,#17251f calc(14.285% - 2px),#31443a calc(14.285% - 2px),#31443a 14.285%)!important;color:#baf5ce!important;text-shadow:0 0 12px #6ce99a55!important;font-family:ui-monospace,"Courier New",monospace!important;font-size:clamp(25px,7vw,37px)!important;font-weight:900!important;letter-spacing:clamp(1px,1vw,5px)!important;direction:ltr!important;text-align:center!important;font-variant-numeric:tabular-nums;box-shadow:inset 0 0 15px #0008!important}.km-input input::placeholder{color:#668c76!important;opacity:.7}.km-input>span{white-space:nowrap;color:#b7d2c1!important;font-size:11px!important}.km-input:focus-within{border-color:#8bd7a7!important;box-shadow:0 0 0 3px #75d99b22,inset 0 3px 18px #000b!important}
 @media(max-width:360px){.dashboard{gap:4px!important}.dashboard .metric{padding:9px 2px!important}.dashboard .metric span{font-size:8px!important}.km-input{gap:5px;padding:7px!important}.km-input input{height:53px!important;letter-spacing:1px!important}}
 body[data-theme="light"] .search-page-box{background:#fff;border-color:#d3dfe6}body[data-theme="light"] .search-page-box input{color:#17232d}body[data-theme="light"] .km-input{background:linear-gradient(180deg,#dce9e1,#c8dbcf)!important;border-color:#91b49d!important;box-shadow:inset 0 3px 14px #526d5b33!important}body[data-theme="light"] .km-input input{background:repeating-linear-gradient(90deg,#e9f4ec 0,#e9f4ec calc(14.285% - 2px),#b8d1c0 calc(14.285% - 2px),#b8d1c0 14.285%)!important;color:#17653d!important;text-shadow:none!important}body[data-theme="light"] .km-input>span{color:#426b52!important}
-</style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-mark"><i class="material-symbols-rounded loader-symbol" aria-hidden="true">directions_car</i><span>MG</span></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
+</style></head><body data-page="home"><div id="startupLoader" role="status" aria-live="polite"><div class="loader-wave-wrap" aria-hidden="true"><svg class="loader-wave" viewBox="0 0 390 88"><path d="M0 44 C24 8 48 8 72 44 S120 80 144 44 192 8 216 44 264 80 288 44 336 8 360 44 384 65 390 44"/><path d="M0 44 C24 80 48 80 72 44 S120 8 144 44 192 80 216 44 264 8 288 44 336 80 360 44 384 23 390 44"/><path d="M0 44 C18 23 36 23 54 44 S90 65 108 44 144 23 162 44 198 65 216 44 252 23 270 44 306 65 324 44 360 23 378 44"/><path d="M0 44 C18 65 36 65 54 44 S90 23 108 44 144 65 162 44 198 23 216 44 252 65 270 44 306 23 324 44 360 65 378 44"/></svg></div><strong>خودرو من</strong><span class="loader-caption">در حال آماده‌سازی دفترچه سرویس</span><div class="loader-track"><i></i></div></div><div class="app">
 <header class="top"><div></div><button id="themeButton" hidden></button></header>
 <section id="homePage"><div class="km-card"><div class="km-head"><span>کیلومتر فعلی خودرو KM</span></div><div class="km-input"><input id="currentKm" type="text" inputmode="numeric" autocomplete="off" placeholder="مثلاً 600.000" oninput="formatGrouped(this)" onchange="setKm(this.value)"><span>کیلومتر</span></div></div><div class="dashboard" id="dashboard"></div>
 <div class="filters"><select id="categoryFilter" onchange="renderServices()"><option value="">همه دسته‌ها</option></select><button class="add-service-button" type="button" onclick="addService()" aria-label="افزودن سرویس جدید"><i class="material-symbols-rounded" aria-hidden="true">add</i><span>افزودن سرویس</span></button></div>
@@ -928,10 +928,7 @@ window.status=function(service){
 
 /* Remove the artificial 3.5-second startup wait; the app is usable as soon as it renders. */
 function dismissLoader(){
- var loader=document.getElementById('startupLoader');
- if(!loader)return;
- loader.classList.add('is-hidden');
- setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},220);
+ /* The startup loader is dismissed by setupLoader after the full five-second intro. */
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',dismissLoader,{once:true});
 else dismissLoader();
@@ -1165,10 +1162,16 @@ function buildMorePage(){
  var page=document.createElement('section');page.id='morePage';page.className='app-page hidden';page.setAttribute('aria-label','بیشتر');
  var content=document.createElement('div');content.className='more-page-content';
  var support=byId('supportPage'),about=byId('aboutPage');
- var supportTitle=document.createElement('div');supportTitle.className='section-title';supportTitle.textContent='پشتیبان‌گیری';content.appendChild(supportTitle);
+ var supportTitle=document.createElement('div');supportTitle.className='section-title more-support-heading';
+ supportTitle.appendChild(document.createTextNode('پشتیبان‌گیری'));
+ var supportIcon=document.createElement('i');supportIcon.className='material-symbols-rounded more-heading-icon';supportIcon.setAttribute('aria-hidden','true');supportIcon.textContent='backup';supportTitle.appendChild(supportIcon);
+ content.appendChild(supportTitle);
  if(support){Array.from(support.children).forEach(function(node){if(node.classList&&node.classList.contains('section-title'))return;content.appendChild(node)});support.classList.add('hidden');support.setAttribute('aria-hidden','true');}
  var divider=document.createElement('div');divider.className='more-divider';content.appendChild(divider);
- var aboutTitle=document.createElement('div');aboutTitle.className='section-title more-about-heading';aboutTitle.textContent='درباره ما';content.appendChild(aboutTitle);
+ var aboutTitle=document.createElement('div');aboutTitle.className='section-title more-about-heading';
+ aboutTitle.appendChild(document.createTextNode('درباره ما'));
+ var aboutIcon=document.createElement('i');aboutIcon.className='material-symbols-rounded more-heading-icon';aboutIcon.setAttribute('aria-hidden','true');aboutIcon.textContent='info';aboutTitle.appendChild(aboutIcon);
+ content.appendChild(aboutTitle);
  if(about){Array.from(about.children).forEach(function(node){if(node.classList&&node.classList.contains('section-title'))return;content.appendChild(node.cloneNode(true))});about.classList.add('hidden');about.setAttribute('aria-hidden','true');}
  page.appendChild(content);
  var nav=document.querySelector('.smooth-modern-navbar');if(nav&&nav.parentNode)nav.parentNode.insertBefore(page,nav);
@@ -1707,7 +1710,7 @@ body[data-theme="light"] .scroll-top-button{background:linear-gradient(145deg,#f
   if(!loaded)window.addEventListener('load',function(){loaded=true;finishWhenReady()},{once:true});
   function finishWhenReady(){
    if(!loaded)return;
-   var wait=Math.max(0,3500-(Date.now()-started));
+   var wait=Math.max(0,5000-(Date.now()-started));
    setTimeout(function(){loader.classList.add('is-hidden');setTimeout(function(){if(loader.parentNode)loader.parentNode.removeChild(loader)},500)},wait);
   }
   finishWhenReady();
@@ -2099,4 +2102,137 @@ body[data-theme="light"] .more-page-content>.section-title:before{
   background:#f3ead9!important;
   border-color:#d6c39d!important;
 }
+</style>
+
+
+<style id="requested-precision-fixes-2026-11-22">
+/* Service status cards, labels, counters and status symbols */
+.service{transition:background .2s ease,border-color .2s ease,color .2s ease}
+.service.black,.service.status-black{
+ background:linear-gradient(135deg,#571d27 0%,#351820 100%)!important;
+ border:1.5px solid #d34d59!important;color:#fff!important
+}
+.service.red,.service.status-red{
+ background:linear-gradient(135deg,#713707 0%,#4d2b0d 100%)!important;
+ border:1.5px solid #ed922e!important;color:#fff!important
+}
+.service.green,.service.status-green{
+ background:linear-gradient(135deg,#17442f 0%,#153329 100%)!important;
+ border:1.5px solid #49bd7d!important;color:#f1fff6!important
+}
+.service.soft,.service.manual,.service.status-soft{
+ background:linear-gradient(135deg,#101e2c 0%,#182b3d 100%)!important;
+ border:1.5px solid #617e99!important;color:#e8f2fb!important
+}
+.service.black .service-name,.service.red .service-name,.service.green .service-name,
+.service.black .service-info,.service.red .service-info,.service.green .service-info,
+.service.black .category,.service.red .category,.service.green .category,
+.service.soft .service-name,.service.soft .service-info,.service.soft .category,
+.service.manual .service-name,.service.manual .service-info,.service.manual .category{color:inherit!important}
+.service>.service-head>.status{
+ display:inline-flex!important;align-items:center!important;gap:5px!important;
+ font-weight:850!important;white-space:nowrap!important
+}
+.service>.service-head>.status:before{
+ display:inline-block!important;font-family:"Material Symbols Rounded"!important;
+ font-size:16px!important;line-height:1!important;font-weight:normal!important;
+ font-feature-settings:"liga"!important;-webkit-font-feature-settings:"liga"!important
+}
+.service.black>.service-head>.status:before{content:"event_busy"!important}
+.service.red>.service-head>.status:before{content:"schedule"!important}
+.service.green>.service-head>.status:before{content:"check_circle"!important}
+.service.soft>.service-head>.status:before,.service.manual>.service-head>.status:before{content:"pending"!important}
+.service.black>.service-head>.status{background:#a9273538!important;border:1px solid #f16a75!important;color:#ffabb0!important}
+.service.red>.service-head>.status{background:#e9791b35!important;border:1px solid #ffad51!important;color:#ffd09a!important}
+.service.green>.service-head>.status{background:#2ca96830!important;border:1px solid #57d18b!important;color:#a2f0bd!important}
+.service.soft>.service-head>.status,.service.manual>.service-head>.status{background:#263d526e!important;border:1px solid #7895b0!important;color:#d1e4f4!important}
+.service.black .service-history-count{background:#a9273538!important;border-color:#f16a75!important;color:#ffabb0!important}
+.service.red .service-history-count{background:#e9791b35!important;border-color:#ffad51!important;color:#ffd09a!important}
+.service.green .service-history-count{background:#2ca96830!important;border-color:#57d18b!important;color:#a2f0bd!important}
+.service.soft .service-history-count,.service.manual .service-history-count{background:#263d526e!important;border-color:#7895b0!important;color:#d1e4f4!important}
+.legend-item.status-black{color:#ff929a!important}.legend-item.status-red{color:#ffb45f!important}
+.legend-item.status-green{color:#78dfa0!important}.legend-item.status-soft{color:#c2d8ec!important}
+.legend-item.status-black .dot{background:#e34f5b!important}.legend-item.status-red .dot{background:#ff922e!important}
+.legend-item.status-green .dot{background:#36b975!important}.legend-item.status-soft .dot{background:#8baac6!important}
+
+/* Light theme: dark red overdue, vivid orange near due, green current, icy blue unregistered */
+body[data-theme="light"] .service.black,body[data-theme="light"] .service.status-black{
+ background:linear-gradient(135deg,#98252d,#7e1d27)!important;border-color:#a91f2b!important;color:#fff!important
+}
+body[data-theme="light"] .service.red,body[data-theme="light"] .service.status-red{
+ background:linear-gradient(135deg,#ff941f,#f47708)!important;border-color:#e86c00!important;color:#fff!important
+}
+body[data-theme="light"] .service.green,body[data-theme="light"] .service.status-green{
+ background:linear-gradient(135deg,#e2f5e8,#d4efdd)!important;border-color:#63ad7d!important;color:#174e2e!important
+}
+body[data-theme="light"] .service.soft,body[data-theme="light"] .service.manual,body[data-theme="light"] .service.status-soft{
+ background:linear-gradient(135deg,#f8fcff,#eaf3fa)!important;border-color:#b8ccdc!important;color:#29465b!important
+}
+body[data-theme="light"] .service.black .service-name,body[data-theme="light"] .service.black .service-info,
+body[data-theme="light"] .service.black .category,body[data-theme="light"] .service.red .service-name,
+body[data-theme="light"] .service.red .service-info,body[data-theme="light"] .service.red .category{color:#fff!important}
+body[data-theme="light"] .service.green .service-name,body[data-theme="light"] .service.green .service-info,
+body[data-theme="light"] .service.green .category,body[data-theme="light"] .service.soft .service-name,
+body[data-theme="light"] .service.soft .service-info,body[data-theme="light"] .service.soft .category,
+body[data-theme="light"] .service.manual .service-name,body[data-theme="light"] .service.manual .service-info,
+body[data-theme="light"] .service.manual .category{color:inherit!important}
+body[data-theme="light"] .service.black>.service-head>.status{background:#6e111c!important;border-color:#ffc0c4!important;color:#fff!important}
+body[data-theme="light"] .service.red>.service-head>.status{background:#e85e00!important;border-color:#fff0d9!important;color:#fff!important}
+body[data-theme="light"] .service.green>.service-head>.status{background:#c0e9cd!important;border-color:#4a9a67!important;color:#14532d!important}
+body[data-theme="light"] .service.soft>.service-head>.status,body[data-theme="light"] .service.manual>.service-head>.status{background:#e1edf6!important;border-color:#a9c2d6!important;color:#36566d!important}
+body[data-theme="light"] .service.black .service-history-count{background:#6e111c!important;border-color:#ffc0c4!important;color:#fff!important}
+body[data-theme="light"] .service.red .service-history-count{background:#e85e00!important;border-color:#fff0d9!important;color:#fff!important}
+body[data-theme="light"] .service.green .service-history-count{background:#c0e9cd!important;border-color:#4a9a67!important;color:#14532d!important}
+body[data-theme="light"] .service.soft .service-history-count,body[data-theme="light"] .service.manual .service-history-count{background:#e1edf6!important;border-color:#a9c2d6!important;color:#36566d!important}
+body[data-theme="light"] .legend-item.status-black{color:#8f1e28!important}
+body[data-theme="light"] .legend-item.status-red{color:#d85b00!important}
+body[data-theme="light"] .legend-item.status-green{color:#176b39!important}
+body[data-theme="light"] .legend-item.status-soft{color:#526f85!important}
+
+/* History dialog: only the records area scrolls; action buttons stay visible */
+#modalRoot .modal-back{align-items:center!important;padding:12px!important}
+#modalRoot .modal{
+ display:flex!important;flex-direction:column!important;min-height:0!important;
+ max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))!important;
+ overflow:hidden!important
+}
+#modalRoot .modal-scroll{
+ display:block!important;flex:1 1 auto!important;min-height:0!important;
+ max-height:none!important;overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;
+ padding:5px 14px 14px!important
+}
+#modalRoot .record-list{display:grid!important;grid-auto-rows:max-content!important;align-content:start!important;gap:9px!important}
+#modalRoot .record-row{display:block!important;flex:none!important;height:auto!important;min-height:0!important}
+#modalRoot .modal-actions{
+ position:relative!important;flex:0 0 auto!important;display:grid!important;
+ grid-template-columns:1fr 1fr!important;gap:10px!important;margin:0!important;
+ padding:12px 14px calc(12px + env(safe-area-inset-bottom))!important;
+ background:var(--panel)!important;border-top:1px solid var(--line)!important
+}
+#modalRoot .modal-actions .btn{min-width:0!important;min-height:46px!important}
+body[data-theme="light"] #modalRoot .modal-actions{background:#fff!important}
+
+/* Real icon elements: text remains on the right, icon sits separately on its left */
+.more-page-content>.section-title{
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:flex-start!important;gap:10px!important;direction:rtl!important;
+}
+.more-page-content>.section-title:before{display:none!important;content:none!important}
+.more-page-content>.section-title .more-heading-icon{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ flex:0 0 40px!important;width:40px!important;height:40px!important;
+ border:1px solid #d7bd8755!important;border-radius:13px!important;
+ background:#d7bd8718!important;color:var(--gold)!important;
+ font-size:23px!important;font-style:normal!important;line-height:1!important
+}
+body[data-theme="light"] .more-page-content>.section-title .more-heading-icon{
+ background:#f3ead9!important;border-color:#d6c39d!important
+}
+
+/* Clean icon-free five-second startup animation */
+#startupLoader .loader-wave-wrap{width:min(86vw,410px)!important;height:100px!important;padding:8px 0!important}
+#startupLoader .loader-wave{width:min(82vw,390px)!important;height:88px!important}
+#startupLoader .loader-track i{animation-duration:5s!important}
+@media(prefers-reduced-motion:reduce){#startupLoader .loader-wave path{animation:none!important}}
 </style>
