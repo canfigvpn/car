@@ -1716,7 +1716,7 @@ body[data-theme="light"] .scroll-top-button{background:linear-gradient(145deg,#f
   var b=document.createElement('button');b.id='scrollTopButton';b.className='scroll-top-button';
   b.type='button';b.setAttribute('aria-label','رفتن به بالای صفحه');b.title='رفتن به بالای صفحه';
   b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg>';
-  b.addEventListener('click',function(){window.scrollTo({top:0,left:0,behavior:'smooth'})});
+  b.addEventListener('click',function(event){event.preventDefault()});
   document.body.appendChild(b);
   function position(){
    var home=id('homeTab'),nav=home&&home.getBoundingClientRect();
