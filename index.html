@@ -613,21 +613,21 @@ function renderServices(){
     return s.enabled&&(!cat||s.cat===cat)&&normalizeSearch(s.name+' '+s.cat+' '+s.rule).includes(q);
   });
   list.sort(function(a,b){
-    return rank[status(a)]-rank[status(b)]||
+    return rank[status(a)]-rank(status(b))||
       String(a.cat).localeCompare(String(b.cat),'fa')||
       String(a.name).localeCompare(String(b.name),'fa');
   });
   var out='',last='';
   list.forEach(function(s){
-    var st=status(s);
+    var st=status(s),count=Array.isArray(s.records)?s.records.length:0;
     if(st!==last){
       last=st;
       out+='<div class="section-title status-heading status-'+st+'">'+esc(label(st))+
         '<span class="count">'+list.filter(function(x){return status(x)===st;}).length+' مورد</span></div>';
     }
     out+='<article class="service '+st+'">'+
-      '<div class="service-head"><div><div class="service-name">'+esc(s.name)+'</div>'+
-      '<div class="category service-history-label">سوابق '+esc(s.name)+' · '+s.records.length+' سابقه</div></div>'+
+      '<div class="service-head"><div class="service-title-wrap"><div class="service-name">'+esc(s.name)+'</div>'+
+      '<span class="service-history-count" aria-label="'+count+' سابقه">'+count+'</span></div>'+
       '<span class="status">'+esc(label(st))+'</span></div>'+
       '<div class="service-info">'+dueCardHTML(s)+'</div>'+
       '<div class="service-actions">'+
@@ -1602,8 +1602,9 @@ window.closeModal=function(){
  window[name]=function(id){
   var s=(typeof state!=='undefined'&&state.services||[]).find(function(x){return x.id===id});
   if(!s)return;
-  var title=name==='recordService'?'ثبت عملیات':name==='editService'?'تنظیمات سرویس':'سوابق سرویس';
-  var subtitle=s.name+(name==='showRecords'?' · '+(s.records||[]).length+' سابقه':'');
+  var count=(s.records||[]).length;
+  var title=name==='recordService'?'ثبت عملیات':name==='editService'?'تنظیمات سرویس':'سوابق: سرویس '+s.name+' : '+count;
+  var subtitle=name==='showRecords'?'':s.name;
   return showActionPage(title,subtitle,original,id);
  };
 });
@@ -1821,24 +1822,29 @@ body[data-theme="light"] .page-back,body[data-theme="light"] .search-page-head>b
   input.dataset.flipReady='1';
   var display=document.createElement('div');display.className='flip-display';display.setAttribute('aria-hidden','true');
   input.parentNode.insertBefore(display,input);
-  var previous='';
+  var previousDigits=[];
   function draw(){
    var raw=String(input.value||'').replace(/[^0-9]/g,'');
-   var formatted=raw?raw.replace(/\B(?=(\d{3})+(?!\d))/g,','):'0';
-   if(formatted===previous)return;
-   previous=formatted;display.innerHTML='';
-   Array.from(formatted).forEach(function(ch){
+   var formatted=raw?raw.replace(/\\B(?=(\\d{3})+(?!\\d))/g,','):'0';
+   display.innerHTML='';
+   var chars=Array.from(formatted),digitPositions=chars.map(function(ch,index){return ch===' ,'?-1:(ch===','?-1:index)}).filter(function(index){return index>=0});
+   var nextDigits=chars.filter(function(ch){return ch!==','});
+   var oldRight=previousDigits.slice().reverse(),newRight=nextDigits.slice().reverse();
+   chars.forEach(function(ch,index){
     var cell=document.createElement('span');
     if(ch===','){cell.className='flip-separator';cell.textContent=','}
-    else{cell.className='flip-digit';cell.textContent=ch}
+    else{
+     cell.className='flip-digit';cell.textContent=ch;
+     var digitIndex=nextDigits.length-1-nextDigits.slice(0,chars.slice(0,index).filter(function(x){return x!==','}).length).length;
+     var oldDigit=oldRight[digitIndex];
+     if(oldDigit!==undefined&&oldDigit!==ch||oldDigit===undefined){
+      cell.classList.add('is-changing');
+      cell.addEventListener('animationend',function(){cell.classList.remove('is-changing')},{once:true});
+     }
+    }
     display.appendChild(cell);
    });
-   var cells=display.querySelectorAll('.flip-digit');
-   cells.forEach(function(cell,index){
-    var old=draw.lastDigits&&draw.lastDigits[index];
-    if(old!==undefined&&old!==cell.textContent){cell.classList.add('is-changing');cell.addEventListener('animationend',function(){cell.classList.remove('is-changing')},{once:true})}
-   });
-   draw.lastDigits=Array.from(cells).map(function(x){return x.textContent});
+   previousDigits=nextDigits;
   }
   input.addEventListener('input',draw);input.addEventListener('change',draw);
   var descriptor=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
@@ -1869,3 +1875,99 @@ body[data-theme="light"] .page-back,body[data-theme="light"] .search-page-head>b
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
 </script>
+
+
+<style id="requested-service-history-and-responsive-fix">
+/* Service name and compact history-count badge */
+.service-title-wrap{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.service-title-wrap .service-name{min-width:0}
+.service-history-count{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:23px;padding:0 7px;border-radius:999px;border:1px solid #d7bd8770;background:#d7bd871b;color:#e6cc98;font-size:10px;font-weight:800;line-height:1}
+body[data-theme="light"] .service-history-count{background:#f2e9d8;border-color:#cdb887;color:#76551f}
+
+/* Service history page: visible content area and title only */
+#serviceActionPage{width:100%;max-width:100%;min-width:0;overflow:visible}
+#serviceActionPage .action-page-head{min-width:0}
+#serviceActionPage .action-page-title{min-width:0}
+#serviceActionPage .action-page-title small:empty{display:none!important}
+#serviceActionPage .action-page-panel{display:block!important;min-height:100px!important;width:100%;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#serviceActionPage .action-page-content{display:block!important;width:100%;min-height:80px!important;overflow:visible!important;background:transparent!important;color:var(--text)!important}
+#serviceActionPage .modal-scroll{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;max-height:none!important;overflow:visible!important;padding:0!important;margin:0!important;background:transparent!important;color:var(--text)!important}
+#serviceActionPage .record-list{display:grid!important;gap:10px!important;margin:0!important;padding:0!important}
+#serviceActionPage .record-row{display:block!important;min-width:0;background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:15px!important;padding:13px!important;color:var(--text)!important}
+#serviceActionPage .record-row .details{white-space:pre-wrap;overflow-wrap:anywhere}
+#serviceActionPage .modal-actions{position:static!important;width:100%;margin:14px 0 0!important;padding:0!important;background:transparent!important;border:0!important}
+#serviceActionPage .modal-title{display:none!important}
+body[data-theme="light"] #serviceActionPage .record-row{background:#fff!important;color:#17232d!important;border-color:#d4dee5!important}
+
+/* Larger odometer and digit windows */
+.km-card{padding:22px!important}
+.km-head{width:100%!important;display:flex!important;justify-content:center!important;align-items:center!important;text-align:center!important}
+.km-head>span:first-child{margin-inline:auto!important;text-align:center!important}
+.km-input{min-height:108px!important;padding:13px 10px!important}
+.km-input .flip-display{gap:clamp(3px,1.2vw,8px)!important}
+.km-input .flip-digit{width:clamp(27px,7.2vw,49px)!important;height:clamp(51px,13vw,68px)!important;font-size:clamp(29px,8vw,45px)!important;border-radius:10px!important}
+.km-input .flip-separator{font-size:clamp(23px,6vw,30px)!important}
+
+/* Keep the scroll-to-top button visible above the floating navigation */
+.scroll-top-button{
+ z-index:52!important;left:auto!important;right:16px!important;
+ bottom:calc(84px + env(safe-area-inset-bottom))!important;
+ width:44px!important;height:44px!important;
+ transform:translateY(12px) scale(.94)!important;
+}
+.scroll-top-button.is-visible{transform:translateY(0) scale(1)!important}
+.scroll-top-button:active{transform:translateY(0) scale(.96)!important}
+
+/* Responsive layout: compact phones through desktop */
+@media(min-width:300px) and (max-width:359px){
+ .app{padding:9px 7px 8px!important}
+ .top{gap:5px!important}
+ .brand{font-size:15px!important}
+ .km-card{padding:13px!important;border-radius:18px!important}
+ .km-input{min-height:83px!important;padding:8px 5px!important}
+ .km-input .flip-digit{width:clamp(21px,7vw,26px)!important;height:43px!important;font-size:25px!important}
+ .km-input .flip-separator{font-size:18px!important}
+ .dashboard{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+ .metric{padding:9px 5px!important}
+ .metric strong{font-size:19px!important}
+ .filters{gap:5px!important}
+ .filters select,.add-service-button{min-width:0!important;font-size:10px!important;padding-inline:7px!important}
+ .service{padding:10px!important}
+ .service-head{gap:5px!important}
+ .service-name{font-size:12px!important}
+ .service-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important}
+ .service-actions .btn{min-width:0!important;font-size:8px!important;padding:7px 2px!important}
+ .smooth-modern-navbar{width:calc(100% - 12px)!important;gap:1px!important}
+ .smooth-modern-navbar button{min-width:0!important;padding-inline:2px!important;font-size:9px!important}
+ .smooth-modern-navbar button i{font-size:18px!important}
+}
+@media(min-width:360px) and (max-width:520px){
+ .app{padding:11px 9px 8px!important}
+ .km-input{min-height:96px!important}
+ .km-input .flip-digit{width:clamp(24px,7vw,34px)!important;height:49px!important;font-size:29px!important}
+ .dashboard{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .service-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+ .service-actions .btn{min-width:0!important;font-size:9px!important;padding-inline:4px!important}
+ .smooth-modern-navbar{width:calc(100% - 18px)!important}
+}
+@media(min-width:521px) and (max-width:767px){
+ .app{width:100%;max-width:760px!important;padding:16px 18px 10px!important}
+ .dashboard{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ .service-actions{grid-template-columns:1.15fr 1fr 1fr!important}
+}
+@media(min-width:768px) and (max-width:1023px){
+ .app{max-width:900px!important;padding:20px 24px 12px!important}
+ .km-card{padding:24px!important}
+ .dashboard{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(min-width:1024px) and (max-width:1280px){
+ .app{max-width:960px!important;padding:22px 28px 14px!important}
+ .km-card{padding:26px!important}
+ .dashboard{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+ .service{padding:17px!important}
+}
+@media(max-width:767px){
+ #serviceActionPage{padding-inline:0!important}
+ #serviceActionPage .action-page-head{margin-inline:2px!important}
+}
+</style>
